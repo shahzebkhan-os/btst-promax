@@ -1,0 +1,31 @@
+{
+  "app_name": "NSE Option Chain Analyzer",
+  "version": "1.0.0",
+  "description": "A comprehensive tool for analyzing NSE option chain data with share selection feature",
+  "author": "OpenClaw AI Assistant",
+  "default_settings": {
+    "max_results_display": 10,
+    "default_expiration_days": 30,
+    "min_open_interest_threshold": 1000,
+    "display_currency": "INR",
+    "supported_indices": [
+      "NIFTY 50",
+      "BANKNIFTY",
+      "FINNIFTY"
+    ]
+  },
+  "features": {
+    "option_chain_analysis": true,
+    "support_resistance_detection": true,
+    "put_call_ratio_analysis": true,
+    "max_pain_calculation": true,
+    "volume_analysis": true,
+    "implied_volatility_tracking": true
+  },
+  "output_formats": [
+    "console",
+    "json",
+    "csv"
+  ],
+  "supported_stocks": "All Nifty 50 constituents and more"
+}
