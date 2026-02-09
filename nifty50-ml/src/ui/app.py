@@ -42,6 +42,12 @@ st.subheader("Predictions")
 
 st.info("RISK NOTICE: Educational only. Not financial advice.")
 import os
+import datetime as dt
+
+# QoL controls
+query = st.text_input("Search symbol", "").upper().strip()
+option_filter = st.selectbox("Filter", ["ALL", "CALL", "PUT"]) 
+row_limit = st.slider("Rows", 10, 200, 50, 10)
 
 if os.path.exists("data/features/latest.csv"):
     df = pd.read_csv("data/features/latest.csv")
@@ -60,4 +66,30 @@ else:
         "last_update": ["2026-02-10 02:40" for _ in range(len(display))]
     })
 
-st.dataframe(df, use_container_width=True)
+# Filters
+if query:
+    df = df[df["symbol"].str.contains(query, na=False)]
+if option_filter != "ALL" and "suggested_option" in df.columns:
+    df = df[df["suggested_option"] == option_filter]
+
+# Sort by confidence if present
+if "confidence" in df.columns:
+    df = df.sort_values("confidence", ascending=False)
+
+# Limit rows
+df = df.head(row_limit)
+
+# Color CALL/PUT
+if "suggested_option" in df.columns:
+    def color_call_put(val):
+        if val == "CALL":
+            return "color: #00c853; font-weight: 700;"
+        if val == "PUT":
+            return "color: #d50000; font-weight: 700;"
+        return ""
+    styled = df.style.applymap(color_call_put, subset=["suggested_option"])
+    st.dataframe(styled, use_container_width=True)
+else:
+    st.dataframe(df, use_container_width=True)
+
+st.caption(f"Last render: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
