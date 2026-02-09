@@ -1,7 +1,7 @@
 import time
 import pandas as pd
 import numpy as np
-from src.ingest.connectors import fetch_yahoo_ohlc
+from src.ingest.connectors import fetch_yahoo_ohlc, fetch_historical_fo
 from src.features.indicators import add_indicators
 from src.models.lstm import LSTMModel
 from src.options.recommender import recommend
@@ -61,8 +61,20 @@ def process_symbol(symbol: str):
     else:
         prob = raw_prob
 
-    # dummy options
-    options = [{"strike": 100, "cost": 5, "payoff": 12}, {"strike": 110, "cost": 3, "payoff": 7}]
+    # pull latest historical FO (optional)
+    option_price = 0.0
+    option_value = 0.0
+    try:
+        hist = fetch_historical_fo(symbol, instrument="OPTSTK", from_date="01-01-2024", to_date="31-01-2024")
+        data = hist.get("data", [])
+        if data:
+            last = data[-1]
+            option_price = float(last.get("Close", 0))
+            option_value = float(last.get("Turnover", 0))
+    except Exception:
+        pass
+
+    options = [{"strike": 100, "cost": max(1, option_price), "payoff": max(1, option_value)}]
     recs = recommend(options, p_up=prob)
     top = recs[0]
     return {

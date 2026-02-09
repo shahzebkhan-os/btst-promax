@@ -36,6 +36,28 @@ def fetch_nse_option_chain(symbol: str, expiry: str = ""):
     return r.json()
 
 
+def fetch_historical_fo(symbol: str, instrument: str, from_date: str, to_date: str,
+                        expiry_date: str = "", strike: str = "", option_type: str = ""):
+    """Fetch NSE historical contract-wise data (FO). Dates are dd-mm-yyyy."""
+    s = _session()
+    url = NSE_BASE + "/api/historical/fo/derivatives"
+    params = {
+        "from": from_date,
+        "to": to_date,
+        "instrumentType": instrument,
+        "symbol": symbol,
+    }
+    if expiry_date:
+        params["expiryDate"] = expiry_date
+    if strike:
+        params["strikePrice"] = strike
+    if option_type:
+        params["optionType"] = option_type
+    r = s.get(url, params=params, timeout=10)
+    r.raise_for_status()
+    return r.json()
+
+
 def save_parquet(df: pd.DataFrame, path: str):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, index=False)

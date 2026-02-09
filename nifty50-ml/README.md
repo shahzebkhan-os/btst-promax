@@ -34,7 +34,7 @@ docker compose up --build
 ```
 
 ## Features
-- NIFTY50 + components ingestion (OHLCV + option chain)
+- NIFTY50 + components ingestion (OHLCV + option chain + historical FO)
 - Indicators: SMA/EMA/Hull, RSI, Stoch, ATR, HV, BB width, OBV, VWAP, MACD, ADX, candle patterns
 - Options: IV surface fitting, PCR, ΔOI, Greeks (delta/gamma/vega)
 - Models: LSTM, CNN, Transformer + LightGBM stacking
