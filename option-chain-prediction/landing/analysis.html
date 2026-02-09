@@ -67,7 +67,16 @@
       </section>
 
       <section id="signals" class="section dark">
-        <h2>Top Signals (15m)</h2>
+        <h2>Signals (15m)</h2>
+        <div class="filters">
+          <input id="filterInput" placeholder="Filter by symbol…" />
+          <select id="sortSelect">
+            <option value="symbol">Sort: Symbol</option>
+            <option value="dir">Sort: Premium Up Prob</option>
+            <option value="iv">Sort: ΔIV</option>
+            <option value="oi">Sort: ΔOI</option>
+          </select>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -85,6 +94,11 @@
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section class="section">
+        <h2>Quick Chart</h2>
+        <canvas id="probChart" height="120"></canvas>
       </section>
 
       <section class="section">
@@ -123,6 +137,58 @@
         }
       }
 
+      let cachedRows = [];
+
+      function renderTable(rows) {
+        const body = document.getElementById('signalsBody');
+        body.innerHTML = rows.map(r => {
+          const dirClass = parseFloat(r.dir) >= 0.5 ? 'positive' : 'negative';
+          return `
+            <tr>
+              <td>${r.symbol}</td>
+              <td>${r.iv}</td>
+              <td class="${dirClass}">${r.dir}</td>
+              <td>${r.oi}</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function renderChart(rows) {
+        const ctx = document.getElementById('probChart').getContext('2d');
+        const data = rows.slice(0, 20);
+        const labels = data.map(r => r.symbol);
+        const values = data.map(r => parseFloat(r.dir) || 0);
+        const max = Math.max(...values, 1);
+
+        ctx.clearRect(0, 0, 600, 200);
+        const w = ctx.canvas.width / labels.length;
+        values.forEach((v, i) => {
+          const h = (v / max) * 100;
+          ctx.fillStyle = v >= 0.5 ? '#10b981' : '#ef4444';
+          ctx.fillRect(i * w, 120 - h, w - 2, h);
+        });
+      }
+
+      function applyFilters() {
+        const q = document.getElementById('filterInput').value.toUpperCase();
+        const sort = document.getElementById('sortSelect').value;
+        let rows = cachedRows.filter(r => r.symbol.includes(q));
+
+        rows.sort((a, b) => {
+          if (sort === 'symbol') return a.symbol.localeCompare(b.symbol);
+          if (sort === 'dir') return (parseFloat(b.dir) || 0) - (parseFloat(a.dir) || 0);
+          if (sort === 'iv') return (parseFloat(b.iv) || 0) - (parseFloat(a.iv) || 0);
+          if (sort === 'oi') return (parseFloat(b.oi) || 0) - (parseFloat(a.oi) || 0);
+          return 0;
+        });
+
+        renderTable(rows);
+        renderChart(rows);
+      }
+
       async function loadSymbols() {
         try {
           const res = await fetch('data/predictions.csv');
@@ -150,31 +216,23 @@
             });
           }
 
+          cachedRows = rows;
           const list = Array.from(symbols).sort();
           document.getElementById('symbolsList').innerHTML = list.map(s => `<span class="tag">${s}</span>`).join(' ');
 
-          const body = document.getElementById('signalsBody');
-          body.innerHTML = rows.map(r => {
-            const dirClass = parseFloat(r.dir) >= 0.5 ? 'positive' : 'negative';
-            return `
-              <tr>
-                <td>${r.symbol}</td>
-                <td>${r.iv}</td>
-                <td class="${dirClass}">${r.dir}</td>
-                <td>${r.oi}</td>
-                <td>—</td>
-                <td>—</td>
-              </tr>
-            `;
-          }).join('');
+          applyFilters();
         } catch (e) {
           document.getElementById('symbolsList').textContent = 'No predictions.csv found.';
           document.getElementById('signalsBody').innerHTML = '<tr><td colspan="6">No data</td></tr>';
         }
       }
 
+      document.getElementById('filterInput').addEventListener('input', applyFilters);
+      document.getElementById('sortSelect').addEventListener('change', applyFilters);
+
       loadSentiment();
       loadSymbols();
+      setInterval(() => { loadSentiment(); loadSymbols(); }, 30000);
     </script>
   </body>
 </html>
