@@ -24,7 +24,7 @@ class LSTM(nn.Module):
         return self.fc(o[:,-1])
 
 
-def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fees=0.0005):
+def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fees=0.0005, vol_target=0.01):
     # build sequences
     X = []
     Y = []
@@ -60,7 +60,11 @@ def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fe
         probs = calib.transform(preds)
 
         signals = (probs >= conf).astype(int)
-        strat = y_test.flatten() * signals
+        # volatility-adjusted sizing
+        realized = y_test.flatten()
+        vol = np.std(realized) + 1e-9
+        size = min(1.0, vol_target / vol)
+        strat = realized * signals * size
         all_strat.extend(strat)
 
     equity = backtest(all_strat, fees=fees)
