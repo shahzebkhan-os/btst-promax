@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Option Chain Analysis • NSE</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero compact">
+      <nav class="nav">
+        <div class="logo">OptionChainAI</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="#overview">Overview</a>
+          <a href="#signals">Signals</a>
+        </div>
+      </nav>
+      <div class="hero-content">
+        <h1>Live Analysis Dashboard</h1>
+        <p>Intraday 15m horizon · NSE optionable universe</p>
+      </div>
+    </header>
+
+    <main>
+      <section id="overview" class="section">
+        <h2>Market Overview</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>NIFTY</h3>
+            <p class="metric-value">19,842 <span class="positive">▲ 0.8%</span></p>
+            <small>IV 14.2 | PCR 1.08</small>
+          </div>
+          <div class="card">
+            <h3>BANKNIFTY</h3>
+            <p class="metric-value">46,120 <span class="positive">▲ 1.2%</span></p>
+            <small>IV 16.9 | PCR 0.96</small>
+          </div>
+          <div class="card">
+            <h3>VIX</h3>
+            <p class="metric-value">12.4 <span class="negative">▼ 0.3</span></p>
+            <small>Regime: Low Vol</small>
+          </div>
+          <div class="card">
+            <h3>Universe</h3>
+            <p class="metric-value">182 symbols</p>
+            <small>F&O optionable</small>
+          </div>
+        </div>
+      </section>
+
+      <section id="signals" class="section dark">
+        <h2>Top Signals (15m)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>ΔIV (pred)</th>
+                <th>Premium Up Prob</th>
+                <th>ΔOI (pred)</th>
+                <th>IV Skew</th>
+                <th>Liquidity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RELIANCE</td>
+                <td>+0.8</td>
+                <td class="positive">0.71</td>
+                <td>+4,120</td>
+                <td>PUT_HEAVY</td>
+                <td>High</td>
+              </tr>
+              <tr>
+                <td>HDFCBANK</td>
+                <td>+0.4</td>
+                <td class="positive">0.64</td>
+                <td>+2,530</td>
+                <td>NEUTRAL</td>
+                <td>High</td>
+              </tr>
+              <tr>
+                <td>TCS</td>
+                <td>-0.2</td>
+                <td class="negative">0.42</td>
+                <td>-1,220</td>
+                <td>CALL_HEAVY</td>
+                <td>Med</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Chain Heatmap Summary</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>RELIANCE</h3>
+            <p>Gamma wall @ 2500 · OI clusters @ 2450/2500 · IV skew PUT_HEAVY</p>
+          </div>
+          <div class="card">
+            <h3>ICICIBANK</h3>
+            <p>Gamma wall @ 1020 · OI clusters @ 1000/1020 · IV skew NEUTRAL</p>
+          </div>
+          <div class="card">
+            <h3>SBIN</h3>
+            <p>Gamma wall @ 740 · OI clusters @ 720/740 · IV skew CALL_HEAVY</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 OptionChainAI • Analysis view</p>
+    </footer>
+  </body>
+</html>

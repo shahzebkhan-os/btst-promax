@@ -147,6 +147,46 @@ body {
   margin-top: 16px;
 }
 
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metric-value {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.positive {
+  color: var(--accent-2);
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.hero.compact {
+  padding-bottom: 40px;
+}
+
 .footer {
   padding: 24px 10vw 40px;
   color: var(--muted);
