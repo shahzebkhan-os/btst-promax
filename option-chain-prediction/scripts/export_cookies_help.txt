@@ -1,3 +1,8 @@
+Option A (auto):
+python3 scripts/export_nse_cookies_playwright.py
+export NSE_COOKIES_FILE=option-chain-prediction/data/nse_cookies.json
+
+Option B (manual):
 Export cookies from your browser (NSE domain) and set:
 
 export NSE_COOKIES_FILE=/path/to/cookies.json
