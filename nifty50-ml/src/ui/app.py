@@ -5,6 +5,7 @@ from src.pipeline.eta import ETAState
 st.set_page_config(page_title="NIFTY50 ML", layout="wide")
 
 st.title("NIFTY50 Options ML Dashboard")
+st.caption("Research/Educational only — Not financial advice")
 
 symbols = ["RELIANCE","TCS","INFY","HDFCBANK"]
 eta = ETAState()
