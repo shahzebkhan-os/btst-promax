@@ -45,7 +45,11 @@ def process_symbol(symbol: str):
     x = returns[:-1]
     y = (returns[1:] > 0).astype(int)
     if len(x) > 10:
-        x_norm = (x - x.min()) / (x.ptp() + 1e-9)
+        denom = x.ptp()
+        if denom == 0:
+            x_norm = np.zeros_like(x)
+        else:
+            x_norm = (x - x.min()) / (denom + 1e-9)
         mask = (~np.isnan(x_norm)) & (~np.isnan(y))
         x_norm = x_norm[mask]
         y = y[mask]
@@ -63,7 +67,7 @@ def process_symbol(symbol: str):
     top = recs[0]
     return {
         "symbol": symbol,
-        "price": float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0,
+        "price": float(df["Close"].iloc[-1, 0]) if "Close" in df.columns and hasattr(df["Close"], "ndim") and df["Close"].ndim > 1 else float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0,
         "confidence": prob,
         "suggested_option": "CALL" if prob >= 0.5 else "PUT",
         "option_price": float(top.get("cost", 0)),
