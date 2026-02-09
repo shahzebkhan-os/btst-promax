@@ -212,13 +212,30 @@
             symbols.add(sym);
             rows.push({
               symbol: sym,
-              iv: ivIdx >= 0 ? cols[ivIdx] : '',
-              dir: dirIdx >= 0 ? cols[dirIdx] : '',
-              oi: oiIdx >= 0 ? cols[oiIdx] : ''
+              iv: parseFloat(ivIdx >= 0 ? cols[ivIdx] : '0'),
+              dir: parseFloat(dirIdx >= 0 ? cols[dirIdx] : '0'),
+              oi: parseFloat(oiIdx >= 0 ? cols[oiIdx] : '0')
             });
           }
 
-          cachedRows = rows;
+          // aggregate per symbol (mean)
+          const aggMap = {};
+          rows.forEach(r => {
+            if (!aggMap[r.symbol]) aggMap[r.symbol] = {symbol: r.symbol, iv: 0, dir: 0, oi: 0, n: 0};
+            aggMap[r.symbol].iv += r.iv;
+            aggMap[r.symbol].dir += r.dir;
+            aggMap[r.symbol].oi += r.oi;
+            aggMap[r.symbol].n += 1;
+          });
+
+          const aggRows = Object.values(aggMap).map(r => ({
+            symbol: r.symbol,
+            iv: (r.iv / r.n).toFixed(6),
+            dir: (r.dir / r.n).toFixed(6),
+            oi: (r.oi / r.n).toFixed(2)
+          }));
+
+          cachedRows = aggRows;
           const list = Array.from(symbols).sort();
           document.getElementById('symbolsList').innerHTML = list.map(s => `<span class="tag">${s}</span>`).join(' ');
 
