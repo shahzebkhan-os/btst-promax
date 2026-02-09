@@ -61,24 +61,29 @@ def process_symbol(symbol: str):
     else:
         prob = raw_prob
 
-    # pull latest historical FO (optional)
+    # pull latest live option chain snapshot (best‑effort)
     option_price = 0.0
     option_value = 0.0
     try:
         from src.ingest.connectors import fetch_nse_option_chain
         chain = fetch_nse_option_chain(symbol)
-        records = chain.get("records", {}).get("data", [])
-        if records:
-            leg = records[0].get("CE") or records[0].get("PE") or {}
-            option_price = float(leg.get("lastPrice", 0) or 0)
-            option_value = float(leg.get("openInterest", 0) or 0)
+        records = chain.get("records", {})
+        data = records.get("data", []) or []
+        underlying = records.get("underlyingValue")
+        if underlying is None and data:
+            sample = data[0].get("CE") or data[0].get("PE") or {}
+            underlying = sample.get("underlyingValue")
+        if data and underlying is not None:
+            # pick nearest strike to underlying
+            nearest = min(data, key=lambda d: abs((d.get("strikePrice") or 0) - underlying))
+            leg = nearest.get("CE") or nearest.get("PE") or {}
+            option_price = float(leg.get("lastPrice") or leg.get("ltp") or 0)
+            option_value = float(leg.get("openInterest") or leg.get("oi") or 0)
     except Exception:
         pass
 
-    if option_price <= 0:
-        option_price = 0.0
-    if option_value <= 0:
-        option_value = 0.0
+    option_price = option_price if option_price > 0 else 0.0
+    option_value = option_value if option_value > 0 else 0.0
 
     options = [{"strike": 100, "cost": option_price, "payoff": option_value}]
     recs = recommend(options, p_up=prob)
