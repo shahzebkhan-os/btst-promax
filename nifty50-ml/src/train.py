@@ -52,7 +52,7 @@ def main():
 
     ds = SeqDataset(X, y)
     dl = DataLoader(ds, batch_size=64, shuffle=True)
-    model = LSTMModel(5)
+    model = LSTMModel(1)
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
     loss_fn = nn.MSELoss()
 
