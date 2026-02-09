@@ -122,6 +122,10 @@ body {
   border-radius: 12px;
 }
 
+.card.sentiment {
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
 .pipeline {
   display: flex;
   flex-wrap: wrap;
