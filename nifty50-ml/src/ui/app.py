@@ -30,13 +30,9 @@ if st.button("Refresh Live Data & Re-Analyze"):
         st.success("Pipeline completed. Reloading data...")
 
 st.subheader("Progress")
-progress = st.progress(0)
+progress = st.progress(1.0)
 status = st.empty()
-
-for i, s in enumerate(symbols[:50], 1):
-    eta.update(s, 0.2)
-    progress.progress(i/len(symbols))
-    status.write(f"Processed {s} · ETA {eta.estimate(symbols[i:], workers=2):.2f}s")
+status.write("Idle · run refresh to update live data")
 
 st.subheader("Predictions")
 
