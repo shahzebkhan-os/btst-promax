@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, roc_auc_score
+from sklearn.calibration import CalibratedClassifierCV
 from xgboost import XGBRegressor, XGBClassifier
 
 
@@ -70,10 +71,14 @@ def train_pipeline(df: pd.DataFrame, config: PipelineConfig):
 
     iv_model = XGBRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
     oi_model = XGBRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
-    dir_model = XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
+    base_dir_model = XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
 
     iv_model.fit(X_train_s, y_iv_train)
     oi_model.fit(X_train_s, y_oi_train)
+    base_dir_model.fit(X_train_s, y_dir_train)
+
+    # probability calibration for better confidence
+    dir_model = CalibratedClassifierCV(base_dir_model, method="isotonic", cv=3)
     dir_model.fit(X_train_s, y_dir_train)
 
     iv_pred = iv_model.predict(X_test_s)
