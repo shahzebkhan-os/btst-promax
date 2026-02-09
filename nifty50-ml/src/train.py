@@ -27,14 +27,16 @@ def main():
     p.add_argument("--symbol", default="RELIANCE")
     p.add_argument("--epochs", type=int, default=2)
     p.add_argument("--demo", action="store_true")
+    p.add_argument("--min_stocks", type=int, default=25)
     args = p.parse_args()
 
-    # demo data
-    X = np.random.randn(200, 10, 5)
-    y = np.random.randn(200, 1)
+    # demo multi-stock data
+    n_stocks = max(args.min_stocks, 25)
+    X = np.random.randn(200*n_stocks, 10, 5)
+    y = np.random.randn(200*n_stocks, 1)
 
     ds = SeqDataset(X, y)
-    dl = DataLoader(ds, batch_size=32, shuffle=True)
+    dl = DataLoader(ds, batch_size=64, shuffle=True)
     model = LSTMModel(5)
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
     loss_fn = nn.MSELoss()
