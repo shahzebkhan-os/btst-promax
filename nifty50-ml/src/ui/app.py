@@ -31,5 +31,7 @@ for i, s in enumerate(symbols, 1):
 st.subheader("Predictions")
 
 st.info("RISK NOTICE: Educational only. Not financial advice.")
-df = pd.DataFrame({"symbol": symbols, "p_up": [0.61,0.54,0.66,0.58]})
+# demo predictions (same length as symbols)
+probs = [0.5 + (i % 10) * 0.01 for i in range(len(symbols))]
+df = pd.DataFrame({"symbol": symbols, "p_up": probs})
 st.dataframe(df, use_container_width=True)
