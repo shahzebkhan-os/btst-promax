@@ -1,0 +1,63 @@
+{
+  "alert_id": "6848194b-2f61-496a-a7c3-9ca31f16ee14",
+  "mode": "SCAN",
+  "symbol": "AAPL",
+  "market": "US",
+  "timestamp_utc": "2026-02-09T18:49:04.192686+00:00",
+  "price": 185.25,
+  "change_pct": 1.42,
+  "trend": "STRONG_UPTREND",
+  "key_level": 184.0,
+  "volume_x": 2.1,
+  "rsi": 61,
+  "iv_percentile": 42,
+  "ml_confidence": 0.83,
+  "ml_label": "HIGH",
+  "heatmap_summary": {
+    "gamma_wall": {
+      "strike": 185,
+      "gamma_exposure": 118000
+    },
+    "oi_clusters": [
+      {
+        "strike": 185,
+        "oi": 5200
+      },
+      {
+        "strike": 190,
+        "oi": 4100
+      }
+    ],
+    "iv_skew": "PUT_HEAVY"
+  },
+  "recommended_trade": {
+    "strategy": "BUY_CALL",
+    "strikes": [
+      185
+    ],
+    "expiry": "2026-03-20",
+    "dte": 38,
+    "entry_target": "2.40-2.65",
+    "stop": 1.7,
+    "capital": 300
+  },
+  "risk": {
+    "max_loss": 300,
+    "max_gain": 900,
+    "breakeven": 187.65
+  },
+  "data_gaps": [],
+  "model_version": "LGBM_v1.0",
+  "model_hash": "abc123",
+  "raw_metrics": {
+    "top_features": [
+      "volume_x",
+      "rsi"
+    ],
+    "sma_20": 183.2,
+    "sma_50": 180.4,
+    "sma_200": 170.1,
+    "macd_hist": 0.8,
+    "hv_30d": 0.22
+  }
+}

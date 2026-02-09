@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "alert_id",
+    "mode",
+    "symbol",
+    "market",
+    "timestamp_utc",
+    "price",
+    "change_pct",
+    "trend",
+    "key_level",
+    "volume_x",
+    "rsi",
+    "iv_percentile",
+    "ml_confidence",
+    "ml_label",
+    "heatmap_summary",
+    "recommended_trade",
+    "risk",
+    "data_gaps",
+    "model_version",
+    "model_hash",
+    "raw_metrics"
+  ],
+  "properties": {
+    "alert_id": {"type": "string"},
+    "mode": {"type": "string", "enum": ["SCAN", "ANALYSIS", "CHAIN"]},
+    "symbol": {"type": "string"},
+    "market": {"type": "string", "enum": ["US", "IN"]},
+    "timestamp_utc": {"type": "string"},
+    "price": {"type": ["number", "null"]},
+    "change_pct": {"type": ["number", "null"]},
+    "trend": {"type": "string"},
+    "key_level": {"type": ["number", "null"]},
+    "volume_x": {"type": ["number", "null"]},
+    "rsi": {"type": ["number", "null"]},
+    "iv_percentile": {"type": ["number", "null"]},
+    "ml_confidence": {"type": "number"},
+    "ml_label": {"type": "string", "enum": ["HIGH", "MEDIUM", "LOW"]},
+    "heatmap_summary": {
+      "type": "object",
+      "required": ["gamma_wall", "oi_clusters", "iv_skew"],
+      "properties": {
+        "gamma_wall": {
+          "type": "object",
+          "required": ["strike", "gamma_exposure"],
+          "properties": {
+            "strike": {"type": ["number", "null"]},
+            "gamma_exposure": {"type": ["number", "null"]}
+          }
+        },
+        "oi_clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["strike", "oi"],
+            "properties": {
+              "strike": {"type": ["number", "null"]},
+              "oi": {"type": ["number", "null"]}
+            }
+          }
+        },
+        "iv_skew": {"type": "string"}
+      }
+    },
+    "recommended_trade": {
+      "type": "object",
+      "required": ["strategy", "strikes", "expiry", "dte", "entry_target", "stop", "capital"],
+      "properties": {
+        "strategy": {"type": "string"},
+        "strikes": {"type": "array", "items": {"type": "number"}},
+        "expiry": {"type": "string"},
+        "dte": {"type": "number"},
+        "entry_target": {"type": ["string", "null"]},
+        "stop": {"type": ["number", "null"]},
+        "capital": {"type": ["number", "null"]}
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["max_loss", "max_gain", "breakeven"],
+      "properties": {
+        "max_loss": {"type": ["number", "null"]},
+        "max_gain": {"type": ["number", "null"]},
+        "breakeven": {"type": ["number", "null"]}
+      }
+    },
+    "data_gaps": {"type": "array", "items": {"type": "string"}},
+    "model_version": {"type": "string"},
+    "model_hash": {"type": "string"},
+    "raw_metrics": {"type": "object"}
+  }
+}

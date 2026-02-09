@@ -1,0 +1,15 @@
+risk_overrides:
+  max_drawdown_pct: 10
+  reduce_size_pct: 50
+  consecutive_losses_pause_hours: 24
+  vix_threshold: 35
+  fed_blackout_minutes: 60
+
+ml_thresholds:
+  high: 0.78
+  medium: 0.55
+
+scan_cadence:
+  macro_premarket_et: "04:00"
+  technical_minutes: 15
+  open_close_minutes: 1
