@@ -17,4 +17,5 @@ model:
 target:
   type: classification
   horizon_days: 1
+  intraday_minutes: 15
   label: premium_up
