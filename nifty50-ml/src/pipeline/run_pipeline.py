@@ -19,7 +19,15 @@ def process_symbol(symbol: str):
     # dummy options
     options = [{"strike": 100, "cost": 5, "payoff": 12}, {"strike": 110, "cost": 3, "payoff": 7}]
     recs = recommend(options, p_up=0.6)
-    return {"symbol": symbol, "rows": len(df), "recs": recs[:1]}
+    top = recs[0]
+    return {
+        "symbol": symbol,
+        "price": float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0,
+        "confidence": 0.6,
+        "suggested_option": "CALL",
+        "option_price": float(top.get("cost", 0)),
+        "option_value": float(top.get("payoff", 0)),
+    }
 
 
 def main():
@@ -39,7 +47,9 @@ def main():
         results = pool.run(symbols, process_symbol)
         log_params_metrics({"symbols": len(symbols)}, {"processed": len(results)})
 
-    print("Done", results)
+    df = pd.DataFrame(results)
+    df.to_csv("data/features/latest.csv", index=False)
+    print("Wrote data/features/latest.csv")
 
 if __name__ == "__main__":
     main()
