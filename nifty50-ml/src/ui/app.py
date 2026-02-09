@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import subprocess
 from src.pipeline.eta import ETAState
 
 st.set_page_config(page_title="NIFTY50 ML", layout="wide")
@@ -22,6 +23,11 @@ except Exception:
         "ULTRACEMCO","UPL","WIPRO","ADANIENT","APOLLOHOSP"
     ]
 eta = ETAState()
+
+if st.button("Refresh Live Data & Re-Analyze"):
+    with st.spinner("Running pipeline..."):
+        subprocess.run(["python3", "-m", "src.pipeline.run_pipeline"], check=False)
+        st.success("Pipeline completed. Reloading data...")
 
 st.subheader("Progress")
 progress = st.progress(0)
