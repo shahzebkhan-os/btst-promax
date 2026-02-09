@@ -12,6 +12,7 @@ _HEADERS = {
 
 
 def fetch_optionable_universe() -> pd.DataFrame:
+    # primary: NSE F&O list
     s = requests.Session()
     s.headers.update(_HEADERS)
     s.get(BASE)
@@ -19,4 +20,7 @@ def fetch_optionable_universe() -> pd.DataFrame:
     r.raise_for_status()
     data = r.json().get("data", [])
     df = pd.DataFrame(data)
-    return df[["symbol", "identifier", "lastPrice", "pChange"]].dropna()
+    if not df.empty:
+        return df[["symbol", "identifier", "lastPrice", "pChange"]].dropna()
+    # fallback: underlying-information
+    return fetch_symbols()

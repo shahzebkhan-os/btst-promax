@@ -2,9 +2,9 @@ import requests
 import pandas as pd
 
 BASE = "https://www.nseindia.com"
-CHAIN_URL = BASE + "/api/option-chain-indices"
-EQ_CHAIN_URL = BASE + "/api/option-chain-equities"
+CHAIN_URL = BASE + "/api/option-chain-v3"
 OHLC_URL = BASE + "/api/quote-equity?symbol={symbol}"
+SYMBOLS_URL = BASE + "/api/underlying-information"
 
 _HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -23,15 +23,19 @@ def _get_session():
     return s
 
 
-def fetch_option_chain(symbol: str, is_index: bool = True, retries: int = 3) -> dict:
+def fetch_option_chain(symbol: str, is_index: bool = True, expiry: str = "", retries: int = 3) -> dict:
     s = _get_session()
-    url = CHAIN_URL if is_index else EQ_CHAIN_URL
-    params = {"symbol": symbol}
+    params = {"symbol": symbol, "type": "Indices" if is_index else "Equity"}
+    if expiry:
+        params["expiry"] = expiry
 
     last_err = None
     for _ in range(retries):
         try:
-            r = s.get(url, params=params, timeout=10)
+            r = s.get(CHAIN_URL, params=params, timeout=10)
+            if r.status_code == 401:
+                s = _get_session()
+                r = s.get(CHAIN_URL, params=params, timeout=10)
             r.raise_for_status()
             return r.json()
         except Exception as e:
@@ -41,9 +45,9 @@ def fetch_option_chain(symbol: str, is_index: bool = True, retries: int = 3) -> 
 
 
 def parse_chain_to_df(chain_json: dict) -> pd.DataFrame:
-    records = chain_json.get("records", {})
-    data = records.get("data", [])
-    underlying = records.get("underlyingValue")
+    records = chain_json.get("records", {}) or chain_json.get("data", {})
+    data = records.get("data", []) if isinstance(records, dict) else chain_json.get("data", [])
+    underlying = records.get("underlyingValue") if isinstance(records, dict) else None
     rows = []
     for row in data:
         ce = row.get("CE", {})
