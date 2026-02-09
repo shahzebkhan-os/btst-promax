@@ -14,7 +14,7 @@ def detect_leakage(df: pd.DataFrame, target_col: str, lookahead=1, max_abs_corr=
     for col in numeric.columns:
         if col == target_col:
             continue
-        name = col.lower()
+        name = str(col).lower()
         if any(k in name for k in SUSPICIOUS):
             flags.append(col)
             continue
