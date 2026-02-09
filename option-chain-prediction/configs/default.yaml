@@ -1,0 +1,20 @@
+project:
+  name: option-chain-prediction
+  version: 0.1.0
+
+features:
+  lookback_days: 252
+  use_iv_skew: true
+  use_gamma_exposure: true
+
+model:
+  type: random_forest
+  params:
+    n_estimators: 300
+    max_depth: 12
+    min_samples_split: 4
+
+target:
+  type: classification
+  horizon_days: 1
+  label: premium_up
