@@ -10,23 +10,34 @@ _HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept-Language": "en-US,en;q=0.9",
     "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
     "Connection": "keep-alive",
+    "Referer": "https://www.nseindia.com/option-chain",
 }
 
 
 def _get_session():
     s = requests.Session()
     s.headers.update(_HEADERS)
-    s.get(BASE)  # prime cookies
+    s.get(BASE, timeout=10)  # prime cookies
     return s
 
 
-def fetch_option_chain(symbol: str, is_index: bool = True) -> dict:
+def fetch_option_chain(symbol: str, is_index: bool = True, retries: int = 3) -> dict:
     s = _get_session()
     url = CHAIN_URL if is_index else EQ_CHAIN_URL
-    r = s.get(url, params={"symbol": symbol}, timeout=10)
-    r.raise_for_status()
-    return r.json()
+    params = {"symbol": symbol}
+
+    last_err = None
+    for _ in range(retries):
+        try:
+            r = s.get(url, params=params, timeout=10)
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            last_err = e
+            continue
+    raise last_err
 
 
 def parse_chain_to_df(chain_json: dict) -> pd.DataFrame:
