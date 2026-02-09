@@ -38,7 +38,7 @@ def main():
     X_list, y_list = [], []
     window = 20
     for sym in symbols:
-        df = fetch_yahoo_ohlc(sym + ".NS", period="60d", interval="1d")
+        df = fetch_yahoo_ohlc(sym, period="10y", interval="1d")
         if df.empty or "Close" not in df.columns:
             continue
         close = df["Close"].astype(float).to_numpy().squeeze()

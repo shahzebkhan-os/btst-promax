@@ -12,25 +12,38 @@ from src.pipeline.worker import WorkerPool
 from src.experiment.mlflow_utils import log_params_metrics
 import mlflow
 import torch
-from src.models.calibration import Calibrator
-from src.features.prune import prune_by_correlation
-from src.models.regime import detect_regime
+from src.models.calibration import RegimeCalibrator
+from src.features.prune import prune_by_correlation, prune_by_l1, prune_by_shap
+from src.models.regime import detect_regime, detect_regime_series
+from src.options.labeling import label_option_pnl
+from src.utils.leakage import detect_leakage
 
 
 def process_symbol(symbol: str):
-    df = fetch_yahoo_ohlc(symbol + ".NS", period="60d", interval="15m")
+    df = fetch_yahoo_ohlc(symbol, period="10y", interval="1d")
     df = add_indicators(df.rename(columns=str.title))
 
-    # feature pruning (demo: numeric cols only)
+    # label option P&L (proxy on close for T+1/T+3)
+    df = label_option_pnl(df, price_col="Close", horizons=(1, 3), no_trade_threshold=0.005)
+
+    # feature pruning (numeric cols only)
     num = df.select_dtypes(include="number").fillna(0)
     pruned, dropped = prune_by_correlation(num, threshold=0.95)
+
+    # L1 + SHAP pruning to tighten feature set
+    target = (df["Close"].pct_change().shift(-1) > 0).fillna(0).astype(int)
+    l1_pruned, l1_dropped = prune_by_l1(pruned.drop(columns=["label_1", "label_3"], errors="ignore"), target, C=0.2)
+    shap_pruned, shap_dropped = prune_by_shap(l1_pruned, target, max_features=40)
+
+    # leakage checks
+    leak_flags = detect_leakage(df, target_col="label_1", lookahead=1)
 
     # regime detection (volatility proxy)
     close_series = pruned["Close"]
     if hasattr(close_series, "values") and getattr(close_series, "ndim", 1) > 1:
         close_series = close_series.iloc[:, 0]
-    vol = float(close_series.pct_change().std() or 0)
-    regime = detect_regime(vol)
+    vol_series = close_series.pct_change().rolling(60).std().fillna(0)
+    regime = detect_regime(float(vol_series.iloc[-1] or 0))
 
     # regime-specific model proxy (placeholder for real models)
     if regime == "low":
@@ -40,11 +53,11 @@ def process_symbol(symbol: str):
     else:
         raw_prob = 0.68
 
-    # fit calibrator on a rolling validation window (next-return > 0)
+    # calibrate per regime using next-return > 0
     returns = pruned["Close"].pct_change().fillna(0).values.squeeze()
     x = returns[:-1]
     y = (returns[1:] > 0).astype(int)
-    if len(x) > 10:
+    if len(x) > 20:
         denom = x.ptp()
         if denom == 0:
             x_norm = np.zeros_like(x)
@@ -53,9 +66,11 @@ def process_symbol(symbol: str):
         mask = (~np.isnan(x_norm)) & (~np.isnan(y))
         x_norm = x_norm[mask]
         y = y[mask]
-        if len(x_norm) > 10:
-            calib = Calibrator().fit(x_norm, y)
-            prob = float(calib.transform([raw_prob])[0])
+        regimes = detect_regime_series(pd.Series(x_norm).rolling(60).std().fillna(0))
+        if len(x_norm) > 20:
+            calib = RegimeCalibrator(method_by_regime={"low": "platt", "mid": "isotonic", "high": "isotonic"})
+            calib.fit(regimes, x_norm, y)
+            prob = float(calib.transform([regime], [raw_prob])[0])
         else:
             prob = raw_prob
     else:
@@ -96,7 +111,8 @@ def process_symbol(symbol: str):
         "option_price": float(top.get("cost", 0)),
         "option_value": float(top.get("payoff", 0)),
         "regime": regime,
-        "dropped_features": len(dropped)
+        "dropped_features": len(dropped) + len(l1_dropped) + len(shap_dropped),
+        "leakage_flags": ";".join(leak_flags) if leak_flags else ""
     }
 
 

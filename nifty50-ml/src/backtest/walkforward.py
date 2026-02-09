@@ -24,7 +24,8 @@ class LSTM(nn.Module):
         return self.fc(o[:,-1])
 
 
-def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.55, fees=0.0005, vol_target=0.01, slippage_bps=2):
+def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.55, fees=0.0005,
+                 vol_target=0.01, slippage_bps=2, purge=5):
     # build sequences
     X = []
     Y = []
@@ -35,9 +36,13 @@ def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.55, f
     Y = np.array(Y)[:, None]
 
     all_strat = []
-    for start in range(0, len(X)-train_size-test_size, test_size):
-        X_train, y_train = X[start:start+train_size], Y[start:start+train_size]
-        X_test, y_test = X[start+train_size:start+train_size+test_size], Y[start+train_size:start+train_size+test_size]
+    step = test_size
+    for start in range(0, len(X)-train_size-test_size-purge, step):
+        train_end = start + train_size
+        test_start = train_end + purge
+        test_end = test_start + test_size
+        X_train, y_train = X[start:train_end], Y[start:train_end]
+        X_test, y_test = X[test_start:test_end], Y[test_start:test_end]
 
         # RandomForest on flattened features (baseline boost)
         from src.models.random_forest import RFModel

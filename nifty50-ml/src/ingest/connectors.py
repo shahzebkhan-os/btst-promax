@@ -24,7 +24,14 @@ def _session():
     return s
 
 
-def fetch_yahoo_ohlc(symbol: str, period="60d", interval="15m"):
+def normalize_yahoo_symbol(symbol: str):
+    if symbol.startswith("^") or symbol.endswith(".NS") or symbol.endswith(".NSE"):
+        return symbol
+    return symbol + ".NS"
+
+
+def fetch_yahoo_ohlc(symbol: str, period="10y", interval="1d"):
+    symbol = normalize_yahoo_symbol(symbol)
     data = yf.download(symbol, period=period, interval=interval, auto_adjust=True, progress=False)
     return data.reset_index()
 
