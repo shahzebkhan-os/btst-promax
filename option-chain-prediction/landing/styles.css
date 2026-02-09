@@ -157,12 +157,16 @@ body {
   margin-bottom: 12px;
 }
 
-.filters input, .filters select {
+.filters input, .filters select, .filters button {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.1);
   background: var(--bg-card);
   color: var(--text);
+}
+
+th.sortable {
+  cursor: pointer;
 }
 
 .table-wrap {
