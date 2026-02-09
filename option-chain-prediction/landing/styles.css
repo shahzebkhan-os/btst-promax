@@ -169,6 +169,12 @@ body {
   color: var(--text);
 }
 
+.count-label {
+  color: var(--muted);
+  font-size: 12px;
+  align-self: center;
+}
+
 th.sortable {
   cursor: pointer;
 }

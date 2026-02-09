@@ -93,6 +93,7 @@
             <option value="100">Show: 100</option>
             <option value="all">Show: All</option>
           </select>
+          <span id="countLabel" class="count-label">Showing 0 of 0</span>
         </div>
         <div class="table-wrap">
           <table>
@@ -228,8 +229,9 @@
           return 0;
         });
 
-        if (limit !== 'all') rows = rows.slice(0, parseInt(limit));
+        if (limit !== 'all') rows = rows.slice(0, Math.min(parseInt(limit), rows.length));
 
+        document.getElementById('countLabel').textContent = `Showing ${rows.length} of ${cachedRows.length}`;
         renderTable(rows);
         renderChart(rows);
         renderHeatmap(rows);

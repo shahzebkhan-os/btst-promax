@@ -27,11 +27,12 @@
         <div class="filters">
           <input id="filterInput" placeholder="Search symbol…" />
           <select id="limitSelect">
+            <option value="10">Show: 10</option>
             <option value="20">Show: 20</option>
             <option value="50">Show: 50</option>
-            <option value="100">Show: 100</option>
             <option value="all">Show: All</option>
           </select>
+          <span id="countLabel" class="count-label">Showing 0 of 0</span>
         </div>
         <div class="table-wrap">
           <table>
@@ -74,7 +75,9 @@
         const q = document.getElementById('filterInput').value.toUpperCase();
         const limit = document.getElementById('limitSelect').value;
         let rows = cachedRows.filter(r => r.symbol.includes(q));
-        if (limit !== 'all') rows = rows.slice(0, parseInt(limit));
+        const total = rows.length;
+        if (limit !== 'all') rows = rows.slice(0, Math.min(parseInt(limit), rows.length));
+        document.getElementById('countLabel').textContent = `Showing ${rows.length} of ${total}`;
         renderTable(rows);
       }
 
