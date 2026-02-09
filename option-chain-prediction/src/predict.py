@@ -25,6 +25,8 @@ def main():
     out["pred_oi_delta"] = oi_pred
     out["pred_premium_up_prob"] = dir_prob
 
+    out.to_csv("data/predictions.csv", index=False)
+    out[["pred_iv_delta","pred_oi_delta","pred_premium_up_prob"]].tail(5).to_csv("data/predictions_tail.csv", index=False)
     print(out.tail(5))
 
 

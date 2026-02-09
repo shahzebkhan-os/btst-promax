@@ -191,6 +191,20 @@ th, td {
   padding-bottom: 40px;
 }
 
+.symbols-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
 .footer {
   padding: 24px 10vw 40px;
   color: var(--muted);

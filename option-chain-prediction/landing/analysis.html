@@ -46,16 +46,23 @@
             <p class="metric-value">182 symbols</p>
             <small>F&O optionable</small>
           </div>
-          <div class="card sentiment">
+          <div class="card sentiment" id="sentimentCard">
             <h3>Market Sentiment</h3>
-            <p class="metric-value">Bullish <span class="positive">▲</span></p>
-            <small>Confidence: 0.74 (High)</small>
+            <p class="metric-value" id="sentimentLabel">Loading…</p>
+            <small id="sentimentConf">Confidence: --</small>
           </div>
           <div class="card sentiment">
-            <h3>News Pulse (24h)</h3>
-            <p class="metric-value">+0.42</p>
-            <small>Confidence: 0.68 (Medium)</small>
+            <h3>News + Price Blend</h3>
+            <p class="metric-value" id="sentimentScore">0.00</p>
+            <small>Updated from data/sentiment.json</small>
           </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Processed Symbols (from model output)</h2>
+        <div class="card">
+          <div id="symbolsList" class="symbols-list">Loading…</div>
         </div>
       </section>
 
@@ -125,5 +132,41 @@
     <footer class="footer">
       <p>© 2026 OptionChainAI • Analysis view</p>
     </footer>
+
+    <script>
+      async function loadSentiment() {
+        try {
+          const res = await fetch('../data/sentiment.json');
+          const s = await res.json();
+          document.getElementById('sentimentLabel').textContent = s.sentiment;
+          document.getElementById('sentimentConf').textContent = `Confidence: ${s.confidence}`;
+          document.getElementById('sentimentScore').textContent = s.score;
+        } catch (e) {
+          document.getElementById('sentimentLabel').textContent = 'Unavailable';
+        }
+      }
+
+      async function loadSymbols() {
+        try {
+          const res = await fetch('../data/predictions.csv');
+          const text = await res.text();
+          const lines = text.trim().split('\n');
+          const headers = lines[0].split(',');
+          const symbolIdx = headers.indexOf('symbol');
+          const symbols = new Set();
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            if (symbolIdx >= 0 && cols[symbolIdx]) symbols.add(cols[symbolIdx]);
+          }
+          const list = Array.from(symbols).sort();
+          document.getElementById('symbolsList').innerHTML = list.map(s => `<span class="tag">${s}</span>`).join(' ');
+        } catch (e) {
+          document.getElementById('symbolsList').textContent = 'No predictions.csv found.';
+        }
+      }
+
+      loadSentiment();
+      loadSymbols();
+    </script>
   </body>
 </html>
