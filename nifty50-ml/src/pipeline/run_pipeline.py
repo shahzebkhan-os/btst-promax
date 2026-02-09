@@ -31,7 +31,10 @@ def process_symbol(symbol: str):
     pruned, dropped = prune_by_correlation(num, threshold=0.95)
 
     # L1 + SHAP pruning to tighten feature set
-    target = (df["Close"].pct_change().shift(-1) > 0).fillna(0).astype(int)
+    close_for_target = df["Close"]
+    if isinstance(close_for_target, pd.DataFrame):
+        close_for_target = close_for_target.iloc[:, 0]
+    target = (close_for_target.pct_change().shift(-1) > 0).fillna(0).astype(int)
     l1_pruned, l1_dropped = prune_by_l1(pruned.drop(columns=["label_1", "label_3"], errors="ignore"), target, C=0.2)
     shap_pruned, shap_dropped = prune_by_shap(l1_pruned, target, max_features=40)
 
