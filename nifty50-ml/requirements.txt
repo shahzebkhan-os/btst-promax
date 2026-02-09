@@ -15,3 +15,7 @@ pydantic
 requests
 python-dotenv
 pytest
+fastapi
+uvicorn
+scipy
+prometheus-client

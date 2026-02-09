@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nifty50-ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nifty50-ml
+  template:
+    metadata:
+      labels:
+        app: nifty50-ml
+    spec:
+      containers:
+      - name: app
+        image: nifty50-ml:latest
+        ports:
+        - containerPort: 8501
+        envFrom:
+        - configMapRef:
+            name: nifty50-ml-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nifty50-ml
+spec:
+  selector:
+    app: nifty50-ml
+  ports:
+  - port: 8501
+    targetPort: 8501

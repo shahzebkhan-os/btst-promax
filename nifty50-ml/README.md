@@ -17,6 +17,12 @@ streamlit run src/ui/app.py
 ./sample_run.sh
 ```
 
+## Progress API
+```bash
+uvicorn src.pipeline.progress_api:app --reload --port 9000
+curl http://localhost:9000/progress
+```
+
 ## Docker
 ```bash
 docker compose up --build

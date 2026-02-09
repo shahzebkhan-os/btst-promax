@@ -20,5 +20,7 @@ for i, s in enumerate(symbols, 1):
     status.write(f"Processed {s} · ETA {eta.estimate(symbols[i:], workers=2):.2f}s")
 
 st.subheader("Predictions")
+
+st.info("RISK NOTICE: Educational only. Not financial advice.")
 df = pd.DataFrame({"symbol": symbols, "p_up": [0.61,0.54,0.66,0.58]})
 st.dataframe(df, use_container_width=True)

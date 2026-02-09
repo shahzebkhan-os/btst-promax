@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420">
+  <rect x="20" y="20" width="200" height="80" fill="#e3f2fd" stroke="#000"/>
+  <text x="30" y="55">Ingest (NSE/Yahoo/Kite)</text>
+  <rect x="260" y="20" width="200" height="80" fill="#e8f5e9" stroke="#000"/>
+  <text x="270" y="55">Features + Store</text>
+  <rect x="500" y="20" width="200" height="80" fill="#fff3e0" stroke="#000"/>
+  <text x="510" y="55">Models + Ensemble</text>
+  <rect x="260" y="140" width="200" height="80" fill="#f3e5f5" stroke="#000"/>
+  <text x="270" y="175">Options + IV Surface</text>
+  <rect x="20" y="260" width="200" height="80" fill="#ede7f6" stroke="#000"/>
+  <text x="30" y="295">Backtest + Paper Exec</text>
+  <rect x="500" y="260" width="200" height="80" fill="#fce4ec" stroke="#000"/>
+  <text x="510" y="295">UI + API + ETA</text>
+</svg>
