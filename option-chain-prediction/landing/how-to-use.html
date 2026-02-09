@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Use • Options Insight Hub</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero compact">
+      <nav class="nav">
+        <div class="logo">Options Insight Hub</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="analysis.html">Dashboard</a>
+          <a href="how-to-use.html">How to Use</a>
+          <a href="pipeline.html">Pipeline</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+      </nav>
+      <div class="hero-content">
+        <h1>How to Use</h1>
+        <p>Clear steps to run the pipeline and see results.</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <h2>1) Run the ML pipeline</h2>
+        <pre>
+cd option-chain-prediction
+python3 scripts/generate_sample_data.py
+python3 -m src.train --data data/sample_train.csv --out models.pkl --horizon 1
+python3 scripts/build_sentiment.py
+python3 -m src.predict --data data/sample_train.csv --model models.pkl
+python3 scripts/publish_web_data.py
+        </pre>
+      </section>
+
+      <section class="section dark">
+        <h2>2) Start the web server</h2>
+        <pre>
+cd option-chain-prediction/landing
+python3 -m http.server 8081
+        </pre>
+      </section>
+
+      <section class="section">
+        <h2>3) Open the dashboard</h2>
+        <p>
+          Go to <strong>http://localhost:8081/analysis.html</strong> and refresh
+          after each run to see new predictions.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 Options Insight Hub</p>
+    </footer>
+  </body>
+</html>

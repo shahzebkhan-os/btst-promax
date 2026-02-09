@@ -26,6 +26,7 @@ premium_atm = mid_atm + np.random.normal(0, 4, rows)
 volume_atm = np.random.randint(500, 5000, rows)
 
 sample = pd.DataFrame({
+    "symbol": ["NIFTY"] * rows,
     "underlying_close": underlying_close,
     "underlying_volume": underlying_volume,
     "iv_atm": iv_atm,
