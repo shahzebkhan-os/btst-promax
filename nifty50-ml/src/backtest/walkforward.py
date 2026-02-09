@@ -43,7 +43,7 @@ def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fe
         opt = torch.optim.Adam(model.parameters(), lr=1e-3)
         loss_fn = nn.MSELoss()
         loader = DataLoader(SeqDataset(X_train, y_train), batch_size=64, shuffle=True)
-        for _ in range(2):
+        for _ in range(5):
             for xb,yb in loader:
                 pred = model(xb)
                 loss = loss_fn(pred, yb)
@@ -58,6 +58,10 @@ def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fe
         train_y = (y_train.flatten() > 0).astype(int)
         calib = Calibrator().fit(train_preds, train_y)
         probs = calib.transform(preds)
+
+        # temperature scaling to spread confidence
+        temp = 0.8
+        probs = np.clip((probs ** (1/temp)), 0, 1)
 
         signals = (probs >= conf).astype(int)
         # volatility-adjusted sizing
