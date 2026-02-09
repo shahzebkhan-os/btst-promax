@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 import numpy as np
 from src.ingest.connectors import fetch_yahoo_ohlc
 from src.backtest.walkforward import walk_forward
