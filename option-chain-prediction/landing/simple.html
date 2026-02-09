@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Options Signal Board</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero compact">
+      <nav class="nav">
+        <div class="logo">Options Signal Board</div>
+        <div class="nav-links">
+          <a href="simple.html">Simple</a>
+          <a href="analysis.html">Advanced</a>
+          <a href="how-to-use.html">How to Use</a>
+        </div>
+      </nav>
+      <div class="hero-content">
+        <h1>What to Buy Right Now</h1>
+        <p>Live chain + ML confidence for every optionable stock.</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="filters">
+          <input id="filterInput" placeholder="Search symbol…" />
+          <select id="limitSelect">
+            <option value="20">Show: 20</option>
+            <option value="50">Show: 50</option>
+            <option value="100">Show: 100</option>
+            <option value="all">Show: All</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Live Chain Value</th>
+                <th>Confidence</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="signalsBody">
+              <tr><td colspan="4">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      let cachedRows = [];
+
+      function renderTable(rows) {
+        const body = document.getElementById('signalsBody');
+        body.innerHTML = rows.map(r => {
+          const conf = parseFloat(r.dir) || 0;
+          const action = conf >= 0.7 ? 'BUY' : conf >= 0.55 ? 'WATCH' : 'HOLD';
+          return `
+            <tr>
+              <td>${r.symbol}</td>
+              <td>${r.live || '—'}</td>
+              <td>${(conf*100).toFixed(0)}%</td>
+              <td>${action}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function applyFilters() {
+        const q = document.getElementById('filterInput').value.toUpperCase();
+        const limit = document.getElementById('limitSelect').value;
+        let rows = cachedRows.filter(r => r.symbol.includes(q));
+        if (limit !== 'all') rows = rows.slice(0, parseInt(limit));
+        renderTable(rows);
+      }
+
+      async function loadData() {
+        try {
+          const res = await fetch(`data/predictions.csv?t=${Date.now()}`);
+          const text = await res.text();
+          const lines = text.trim().split('\n');
+          const headers = lines[0].split(',');
+          const symbolIdx = headers.indexOf('symbol');
+          const dirIdx = headers.indexOf('pred_premium_up_prob');
+          const liveIdx = headers.indexOf('underlying_close');
+
+          const rows = [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            const sym = symbolIdx >= 0 ? cols[symbolIdx] : '';
+            if (!sym) continue;
+            rows.push({
+              symbol: sym,
+              dir: dirIdx >= 0 ? cols[dirIdx] : '0',
+              live: liveIdx >= 0 ? cols[liveIdx] : ''
+            });
+          }
+
+          // aggregate per symbol (mean)
+          const agg = {};
+          rows.forEach(r => {
+            if (!agg[r.symbol]) agg[r.symbol] = {symbol: r.symbol, dir: 0, live: 0, n: 0};
+            agg[r.symbol].dir += parseFloat(r.dir) || 0;
+            agg[r.symbol].live += parseFloat(r.live) || 0;
+            agg[r.symbol].n += 1;
+          });
+
+          cachedRows = Object.values(agg).map(r => ({
+            symbol: r.symbol,
+            dir: (r.dir / r.n),
+            live: (r.live / r.n).toFixed(2)
+          })).sort((a, b) => b.dir - a.dir);
+
+          applyFilters();
+        } catch (e) {
+          document.getElementById('signalsBody').innerHTML = '<tr><td colspan="4">No data</td></tr>';
+        }
+      }
+
+      document.getElementById('filterInput').addEventListener('input', applyFilters);
+      document.getElementById('limitSelect').addEventListener('change', applyFilters);
+
+      loadData();
+      setInterval(loadData, 60000);
+    </script>
+  </body>
+</html>
