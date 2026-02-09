@@ -4,7 +4,7 @@ from src.backtest.walkforward import walk_forward
 
 symbol = "RELIANCE"
 print("Fetching 10y data...")
-df = fetch_yahoo_ohlc(symbol + ".NS", period="10y", interval="1d")
+df = fetch_yahoo_ohlc(symbol + ".NS", period="60d", interval="15m")
 close = df["Close"].astype(float).to_numpy().squeeze()
 returns = (close[1:] / close[:-1] - 1.0)
 
