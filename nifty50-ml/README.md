@@ -23,6 +23,11 @@ uvicorn src.pipeline.progress_api:app --reload --port 9000
 curl http://localhost:9000/progress
 ```
 
+## End-to-end pipeline (demo)
+```bash
+python -m src.pipeline.run_pipeline
+```
+
 ## Docker
 ```bash
 docker compose up --build
