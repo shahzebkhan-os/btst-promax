@@ -3,7 +3,9 @@ import pandas as pd
 
 np.random.seed(42)
 
-rows = 1200
+symbols = ["NIFTY","BANKNIFTY","RELIANCE","TCS","HDFCBANK","INFY","ICICIBANK","SBIN","ITC","KOTAKBANK","LT","MARUTI","SUNPHARMA","TITAN","HINDUNILVR"]
+rows_per = 200
+rows = rows_per * len(symbols)
 underlying_close = np.cumsum(np.random.normal(0, 1, rows)) + 20000
 underlying_volume = np.random.randint(5e6, 2e7, rows)
 
@@ -25,8 +27,9 @@ ask_atm = mid_atm + np.random.uniform(2, 8, rows)
 premium_atm = mid_atm + np.random.normal(0, 4, rows)
 volume_atm = np.random.randint(500, 5000, rows)
 
+sym_col = [s for s in symbols for _ in range(rows_per)]
 sample = pd.DataFrame({
-    "symbol": ["NIFTY"] * rows,
+    "symbol": sym_col,
     "underlying_close": underlying_close,
     "underlying_volume": underlying_volume,
     "iv_atm": iv_atm,
