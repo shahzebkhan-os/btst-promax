@@ -7,7 +7,16 @@ st.set_page_config(page_title="NIFTY50 ML", layout="wide")
 st.title("NIFTY50 Options ML Dashboard")
 st.caption("Research/Educational only — Not financial advice")
 
-symbols = ["RELIANCE","TCS","INFY","HDFCBANK"]
+symbols = [
+    "ADANIPORTS","ASIANPAINT","AXISBANK","BAJAJ-AUTO","BAJFINANCE","BAJAJFINSV",
+    "BPCL","BHARTIARTL","BRITANNIA","CIPLA","COALINDIA","DIVISLAB","DRREDDY",
+    "EICHERMOT","GRASIM","HCLTECH","HDFCBANK","HDFCLIFE","HEROMOTOCO",
+    "HINDALCO","HINDUNILVR","ICICIBANK","INDUSINDBK","INFY","ITC",
+    "JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NESTLEIND",
+    "NTPC","ONGC","POWERGRID","RELIANCE","SBIN","SHREECEM",
+    "SUNPHARMA","TATAMOTORS","TATASTEEL","TCS","TECHM","TITAN",
+    "ULTRACEMCO","UPL","WIPRO","ADANIENT","APOLLOHOSP"
+]
 eta = ETAState()
 
 st.subheader("Progress")

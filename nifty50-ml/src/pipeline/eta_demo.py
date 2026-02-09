@@ -1,7 +1,7 @@
 import time
 from .eta import ETAState
 
-symbols = ["RELIANCE","TCS","INFY","HDFCBANK"]
+symbols = ["RELIANCE","TCS","INFY","HDFCBANK","ICICIBANK","SBIN"]
 eta = ETAState(alpha=0.4)
 
 for s in symbols:

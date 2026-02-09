@@ -23,7 +23,16 @@ def process_symbol(symbol: str):
 
 
 def main():
-    symbols = ["RELIANCE","TCS","INFY","HDFCBANK"]
+    symbols = [
+        "ADANIPORTS","ASIANPAINT","AXISBANK","BAJAJ-AUTO","BAJFINANCE","BAJAJFINSV",
+        "BPCL","BHARTIARTL","BRITANNIA","CIPLA","COALINDIA","DIVISLAB","DRREDDY",
+        "EICHERMOT","GRASIM","HCLTECH","HDFCBANK","HDFCLIFE","HEROMOTOCO",
+        "HINDALCO","HINDUNILVR","ICICIBANK","INDUSINDBK","INFY","ITC",
+        "JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NESTLEIND",
+        "NTPC","ONGC","POWERGRID","RELIANCE","SBIN","SHREECEM",
+        "SUNPHARMA","TATAMOTORS","TATASTEEL","TCS","TECHM","TITAN",
+        "ULTRACEMCO","UPL","WIPRO","ADANIENT","APOLLOHOSP"
+    ]
     pool = WorkerPool(workers=2)
 
     with mlflow.start_run():
