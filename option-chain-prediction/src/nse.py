@@ -30,7 +30,9 @@ def fetch_option_chain(symbol: str, is_index: bool = True) -> dict:
 
 
 def parse_chain_to_df(chain_json: dict) -> pd.DataFrame:
-    data = chain_json.get("records", {}).get("data", [])
+    records = chain_json.get("records", {})
+    data = records.get("data", [])
+    underlying = records.get("underlyingValue")
     rows = []
     for row in data:
         ce = row.get("CE", {})
@@ -49,6 +51,7 @@ def parse_chain_to_df(chain_json: dict) -> pd.DataFrame:
                 "bid": ce.get("bidprice"),
                 "ask": ce.get("askPrice"),
                 "ltp": ce.get("lastPrice"),
+                "underlying": underlying,
             })
         if pe:
             rows.append({
@@ -62,5 +65,6 @@ def parse_chain_to_df(chain_json: dict) -> pd.DataFrame:
                 "bid": pe.get("bidprice"),
                 "ask": pe.get("askPrice"),
                 "ltp": pe.get("lastPrice"),
+                "underlying": underlying,
             })
     return pd.DataFrame(rows)

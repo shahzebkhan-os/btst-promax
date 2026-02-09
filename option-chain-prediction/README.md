@@ -22,7 +22,12 @@ option-chain-prediction/
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python3 -m src.cli --symbol NIFTY --expiry 2026-03-19
+python3 scripts/fetch_live_chain.py --symbol NIFTY --index
+```
+
+## Intraday Retraining (15m)
+```bash
+python3 scripts/intraday_retrain.py --interval 15 --cycles 4
 ```
 
 ## Features (examples)
