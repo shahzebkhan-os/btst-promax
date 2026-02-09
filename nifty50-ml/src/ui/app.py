@@ -48,8 +48,12 @@ query = st.text_input("Search symbol", "").upper().strip()
 option_filter = st.selectbox("Filter", ["ALL", "CALL", "PUT"]) 
 row_limit = st.slider("Rows", 10, 200, 50, 10)
 
+now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 if os.path.exists("data/features/latest.csv"):
     df = pd.read_csv("data/features/latest.csv")
+    if "last_update" not in df.columns:
+        df["last_update"] = now_str
 else:
     # demo predictions (same length as display list)
     display = symbols if show_all else symbols[:50]
@@ -62,7 +66,7 @@ else:
         "option_value": [round(100 + (i%10)*5.0,2) for i in range(len(display))],
         "confidence": probs,
         "eta_sec": [round(5 - (i%5)*0.5,2) for i in range(len(display))],
-        "last_update": ["2026-02-10 02:40" for _ in range(len(display))]
+        "last_update": [now_str for _ in range(len(display))]
     })
 
 # Filters
