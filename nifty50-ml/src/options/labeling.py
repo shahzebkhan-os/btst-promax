@@ -9,7 +9,10 @@ def label_option_pnl(df: pd.DataFrame, price_col="Close", horizons=(1, 3), no_tr
       1 = profit, -1 = loss, 0 = no-trade (abs(pnl) < threshold)
     """
     out = df.copy()
-    price = out[price_col].astype(float)
+    price = out[price_col]
+    if isinstance(price, pd.DataFrame):
+        price = price.iloc[:, 0]
+    price = price.astype(float)
     for h in horizons:
         future = price.shift(-h)
         pnl = (future - price) / (price + 1e-9)
