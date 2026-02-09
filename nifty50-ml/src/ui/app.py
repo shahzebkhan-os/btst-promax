@@ -27,12 +27,15 @@ eta = ETAState()
 if st.button("Refresh Live Data & Re-Analyze"):
     with st.spinner("Running pipeline..."):
         subprocess.run(["python3", "-m", "src.pipeline.run_pipeline"], check=False)
-        st.success("Pipeline completed. Reloading data...")
+    st.success("Pipeline completed. Reloading data...")
+    st.rerun()
 
 st.subheader("Progress")
 progress = st.progress(1.0)
 status = st.empty()
 status.write("Idle · run refresh to update live data")
+
+show_all = st.checkbox("Show all symbols", value=True)
 
 st.subheader("Predictions")
 
@@ -49,7 +52,7 @@ if os.path.exists("data/features/latest.csv"):
     df = pd.read_csv("data/features/latest.csv")
 else:
     # demo predictions (same length as display list)
-    display = symbols[:50]
+    display = symbols if show_all else symbols[:50]
     probs = [0.5 + (i % 10) * 0.01 for i in range(len(display))]
     df = pd.DataFrame({
         "symbol": display,
@@ -73,7 +76,8 @@ if "confidence" in df.columns:
     df = df.sort_values("confidence", ascending=False)
 
 # Limit rows
-df = df.head(row_limit)
+if not show_all:
+    df = df.head(row_limit)
 
 # Color CALL/PUT
 if "suggested_option" in df.columns:
