@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import numpy as np
 from src.ingest.connectors import fetch_yahoo_ohlc
 from src.features.indicators import add_indicators
 from src.models.lstm import LSTMModel
