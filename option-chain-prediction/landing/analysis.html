@@ -203,10 +203,11 @@
         const grid = document.getElementById('heatmapGrid');
         grid.innerHTML = sorted.map(r => {
           const skew = parseFloat(r.dir) >= 0.5 ? 'PUT_HEAVY' : 'CALL_HEAVY';
+          const conf = (parseFloat(r.dir) || 0).toFixed(2);
           return `
             <div class="card">
               <h3>${r.symbol}</h3>
-              <p>Gamma wall @ — · OI clusters @ — · IV skew ${skew}</p>
+              <p>Confidence: ${conf} · Gamma wall @ — · OI clusters @ — · IV skew ${skew}</p>
             </div>
           `;
         }).join('');
