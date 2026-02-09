@@ -65,8 +65,9 @@ def process_symbol(symbol: str):
     option_price = 0.0
     option_value = 0.0
     try:
-        hist = fetch_historical_fo(symbol, instrument="OPTSTK", from_date="01-01-2024", to_date="31-01-2024")
-        data = hist.get("data", [])
+        from src.ingest.connectors import fetch_historical_fo_range
+        ranges = [("01-01-2024","31-03-2024"),("01-04-2024","30-06-2024"),("01-07-2024","30-09-2024"),("01-10-2024","31-12-2024")]
+        data = fetch_historical_fo_range(symbol, instrument="OPTSTK", ranges=ranges)
         if data:
             last = data[-1]
             option_price = float(last.get("Close", 0))

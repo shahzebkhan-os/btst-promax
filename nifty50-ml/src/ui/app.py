@@ -91,9 +91,13 @@ if "suggested_option" in df.columns:
         if val == "PUT":
             return "color: #d50000; font-weight: 700;"
         return ""
-    styled = df.style.applymap(color_call_put, subset=["suggested_option"])
+    styled = df.style.map(color_call_put, subset=["suggested_option"])
     st.dataframe(styled, use_container_width=True)
 else:
     st.dataframe(df, use_container_width=True)
 
-st.caption(f"Last render: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+file_ts = ""
+if os.path.exists("data/features/latest.csv"):
+    file_ts = dt.datetime.fromtimestamp(os.path.getmtime("data/features/latest.csv")).strftime('%Y-%m-%d %H:%M:%S')
+
+st.caption(f"Last render: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Data file: {file_ts}")

@@ -58,6 +58,16 @@ def fetch_historical_fo(symbol: str, instrument: str, from_date: str, to_date: s
     return r.json()
 
 
+def fetch_historical_fo_range(symbol: str, instrument: str, ranges: list,
+                              expiry_date: str = "", strike: str = "", option_type: str = ""):
+    """Fetch FO data in chunks (NSE limit ~90 days). ranges=[("01-01-2024","31-03-2024"), ...]"""
+    out = []
+    for f, t in ranges:
+        data = fetch_historical_fo(symbol, instrument, f, t, expiry_date, strike, option_type)
+        out.extend(data.get("data", []))
+    return out
+
+
 def save_parquet(df: pd.DataFrame, path: str):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, index=False)
