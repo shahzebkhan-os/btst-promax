@@ -1,0 +1,7 @@
+Export cookies from your browser (NSE domain) and set:
+
+export NSE_COOKIES_FILE=/path/to/cookies.json
+# or
+export NSE_COOKIES_JSON='[{"name":"cookie","value":"..."}]'
+
+Then run snapshot collection again.

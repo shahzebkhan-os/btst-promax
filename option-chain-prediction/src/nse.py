@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+from .cookies import load_cookies
 
 BASE = "https://www.nseindia.com"
 CHAIN_URL = BASE + "/api/option-chain-v3"
@@ -21,6 +22,10 @@ def _get_session():
     s = requests.Session()
     s.headers.update(_HEADERS)
     s.get(BASE, timeout=10)  # prime cookies
+    # optional browser cookies
+    cookies = load_cookies()
+    if cookies:
+        s.cookies.update(cookies)
     return s
 
 
