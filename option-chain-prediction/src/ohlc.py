@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
+import yfinance as yf
 
 BASE = "https://www.nseindia.com"
 HIST_URL = BASE + "/api/historical/cm/equity"
@@ -12,7 +13,7 @@ _HEADERS = {
 }
 
 
-def fetch_ohlc(symbol: str, days: int = 60) -> pd.DataFrame:
+def _fetch_ohlc_nse(symbol: str, days: int = 60) -> pd.DataFrame:
     s = requests.Session()
     s.headers.update(_HEADERS)
     s.get(BASE)
@@ -40,3 +41,31 @@ def fetch_ohlc(symbol: str, days: int = 60) -> pd.DataFrame:
     })
     df["date"] = pd.to_datetime(df["date"], format="%d-%b-%Y")
     return df[["date","open","high","low","close","volume"]].sort_values("date")
+
+
+def _fetch_ohlc_yahoo(symbol: str, days: int = 60) -> pd.DataFrame:
+    ticker = f"{symbol}.NS"
+    period = f"{days}d"
+    df = yf.Ticker(ticker).history(period=period, interval="1d")
+    if df.empty:
+        return df
+    df = df.reset_index().rename(columns={
+        "Date": "date",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        "Volume": "volume",
+    })
+    return df[["date","open","high","low","close","volume"]].sort_values("date")
+
+
+def fetch_ohlc(symbol: str, days: int = 60) -> pd.DataFrame:
+    """Try NSE, fallback to Yahoo Finance."""
+    try:
+        df = _fetch_ohlc_nse(symbol, days)
+        if not df.empty:
+            return df
+    except Exception:
+        pass
+    return _fetch_ohlc_yahoo(symbol, days)
