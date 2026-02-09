@@ -70,12 +70,17 @@ def process_symbol(symbol: str):
         data = fetch_historical_fo_range(symbol, instrument="OPTSTK", ranges=ranges)
         if data:
             last = data[-1]
-            option_price = float(last.get("Close", 0))
-            option_value = float(last.get("Turnover", 0))
+            option_price = float(last.get("Close", last.get("Settle Price", 0)) or 0)
+            option_value = float(last.get("Premium Turnover", last.get("Turnover", 0)) or 0)
     except Exception:
         pass
 
-    options = [{"strike": 100, "cost": max(1, option_price), "payoff": max(1, option_value)}]
+    if option_price <= 0:
+        option_price = 0.0
+    if option_value <= 0:
+        option_value = 0.0
+
+    options = [{"strike": 100, "cost": option_price, "payoff": option_value}]
     recs = recommend(options, p_up=prob)
     top = recs[0]
     return {
