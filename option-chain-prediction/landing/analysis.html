@@ -80,31 +80,8 @@
                 <th>Liquidity</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>RELIANCE</td>
-                <td>+0.8</td>
-                <td class="positive">0.71</td>
-                <td>+4,120</td>
-                <td>PUT_HEAVY</td>
-                <td>High</td>
-              </tr>
-              <tr>
-                <td>HDFCBANK</td>
-                <td>+0.4</td>
-                <td class="positive">0.64</td>
-                <td>+2,530</td>
-                <td>NEUTRAL</td>
-                <td>High</td>
-              </tr>
-              <tr>
-                <td>TCS</td>
-                <td>-0.2</td>
-                <td class="negative">0.42</td>
-                <td>-1,220</td>
-                <td>CALL_HEAVY</td>
-                <td>Med</td>
-              </tr>
+            <tbody id="signalsBody">
+              <tr><td colspan="6">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -153,15 +130,46 @@
           const lines = text.trim().split('\n');
           const headers = lines[0].split(',');
           const symbolIdx = headers.indexOf('symbol');
+          const ivIdx = headers.indexOf('pred_iv_delta');
+          const dirIdx = headers.indexOf('pred_premium_up_prob');
+          const oiIdx = headers.indexOf('pred_oi_delta');
+
           const symbols = new Set();
+          const rows = [];
+
           for (let i = 1; i < lines.length; i++) {
             const cols = lines[i].split(',');
-            if (symbolIdx >= 0 && cols[symbolIdx]) symbols.add(cols[symbolIdx]);
+            const sym = symbolIdx >= 0 ? cols[symbolIdx] : '';
+            if (!sym) continue;
+            symbols.add(sym);
+            rows.push({
+              symbol: sym,
+              iv: ivIdx >= 0 ? cols[ivIdx] : '',
+              dir: dirIdx >= 0 ? cols[dirIdx] : '',
+              oi: oiIdx >= 0 ? cols[oiIdx] : ''
+            });
           }
+
           const list = Array.from(symbols).sort();
           document.getElementById('symbolsList').innerHTML = list.map(s => `<span class="tag">${s}</span>`).join(' ');
+
+          const body = document.getElementById('signalsBody');
+          body.innerHTML = rows.map(r => {
+            const dirClass = parseFloat(r.dir) >= 0.5 ? 'positive' : 'negative';
+            return `
+              <tr>
+                <td>${r.symbol}</td>
+                <td>${r.iv}</td>
+                <td class="${dirClass}">${r.dir}</td>
+                <td>${r.oi}</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+            `;
+          }).join('');
         } catch (e) {
           document.getElementById('symbolsList').textContent = 'No predictions.csv found.';
+          document.getElementById('signalsBody').innerHTML = '<tr><td colspan="6">No data</td></tr>';
         }
       }
 
