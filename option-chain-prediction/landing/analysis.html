@@ -121,20 +121,20 @@
 
       <section class="section tab-panel" data-panel="heatmap" style="display:none;">
         <h2>Chain Heatmap Summary</h2>
-        <div class="grid" id="heatmapGrid">
-          <div class="card">
-            <h3>RELIANCE</h3>
-            <p>Gamma wall @ 2500 · OI clusters @ 2450/2500 · IV skew PUT_HEAVY</p>
-          </div>
-          <div class="card">
-            <h3>ICICIBANK</h3>
-            <p>Gamma wall @ 1020 · OI clusters @ 1000/1020 · IV skew NEUTRAL</p>
-          </div>
-          <div class="card">
-            <h3>SBIN</h3>
-            <p>Gamma wall @ 740 · OI clusters @ 720/740 · IV skew CALL_HEAVY</p>
-          </div>
+        <div class="filters">
+          <select id="bestSelect">
+            <option value="5">Best 5</option>
+            <option value="10">Best 10</option>
+            <option value="20">Best 20</option>
+            <option value="all">All</option>
+          </select>
+          <select id="bestMetric">
+            <option value="dir">Best by Premium Up Prob</option>
+            <option value="iv">Best by ΔIV</option>
+            <option value="oi">Best by ΔOI</option>
+          </select>
         </div>
+        <div class="grid" id="heatmapGrid"></div>
       </section>
     </main>
 
@@ -193,6 +193,25 @@
         });
       }
 
+      function renderHeatmap(rows) {
+        const bestN = document.getElementById('bestSelect').value;
+        const metric = document.getElementById('bestMetric').value;
+        let sorted = [...rows];
+        sorted.sort((a, b) => (parseFloat(b[metric]) || 0) - (parseFloat(a[metric]) || 0));
+        if (bestN !== 'all') sorted = sorted.slice(0, parseInt(bestN));
+
+        const grid = document.getElementById('heatmapGrid');
+        grid.innerHTML = sorted.map(r => {
+          const skew = parseFloat(r.dir) >= 0.5 ? 'PUT_HEAVY' : 'CALL_HEAVY';
+          return `
+            <div class="card">
+              <h3>${r.symbol}</h3>
+              <p>Gamma wall @ — · OI clusters @ — · IV skew ${skew}</p>
+            </div>
+          `;
+        }).join('');
+      }
+
       let sortDir = 1;
       function applyFilters() {
         const q = document.getElementById('filterInput').value.toUpperCase();
@@ -212,6 +231,7 @@
 
         renderTable(rows);
         renderChart(rows);
+        renderHeatmap(rows);
       }
 
       async function loadSymbols() {
@@ -272,6 +292,8 @@
       document.getElementById('filterInput').addEventListener('input', applyFilters);
       document.getElementById('sortSelect').addEventListener('change', applyFilters);
       document.getElementById('limitSelect').addEventListener('change', applyFilters);
+      document.getElementById('bestSelect').addEventListener('change', applyFilters);
+      document.getElementById('bestMetric').addEventListener('change', applyFilters);
 
       document.getElementById('fetchBtn').addEventListener('click', () => {
         const sym = document.getElementById('liveSymbol').value.toUpperCase().trim();
