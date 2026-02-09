@@ -40,12 +40,19 @@ def process_symbol(symbol: str):
         raw_prob = 0.68
 
     # fit calibrator on a rolling validation window (next-return > 0)
-    returns = pruned["Close"].pct_change().fillna(0).values
+    returns = pruned["Close"].pct_change().fillna(0).values.squeeze()
+    x = returns[:-1]
     y = (returns[1:] > 0).astype(int)
-    x = (returns[:-1] - returns[:-1].min()) / (returns[:-1].ptp() + 1e-9)
     if len(x) > 10:
-        calib = Calibrator().fit(x, y)
-        prob = float(calib.transform([raw_prob])[0])
+        x_norm = (x - x.min()) / (x.ptp() + 1e-9)
+        mask = (~np.isnan(x_norm)) & (~np.isnan(y))
+        x_norm = x_norm[mask]
+        y = y[mask]
+        if len(x_norm) > 10:
+            calib = Calibrator().fit(x_norm, y)
+            prob = float(calib.transform([raw_prob])[0])
+        else:
+            prob = raw_prob
     else:
         prob = raw_prob
 
