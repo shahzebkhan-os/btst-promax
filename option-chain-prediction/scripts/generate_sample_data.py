@@ -4,7 +4,7 @@ import pandas as pd
 np.random.seed(42)
 
 symbols = ["NIFTY","BANKNIFTY","RELIANCE","TCS","HDFCBANK","INFY","ICICIBANK","SBIN","ITC","KOTAKBANK","LT","MARUTI","SUNPHARMA","TITAN","HINDUNILVR"]
-rows_per = 800
+rows_per = 2000
 rows = rows_per * len(symbols)
 underlying_close = np.cumsum(np.random.normal(0, 1, rows)) + 20000
 underlying_volume = np.random.randint(5e6, 2e7, rows)
