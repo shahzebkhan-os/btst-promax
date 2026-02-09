@@ -5,6 +5,7 @@ BASE = "https://www.nseindia.com"
 CHAIN_URL = BASE + "/api/option-chain-v3"
 OHLC_URL = BASE + "/api/quote-equity?symbol={symbol}"
 SYMBOLS_URL = BASE + "/api/underlying-information"
+CONTRACT_INFO_URL = BASE + "/api/option-chain-contract-info"
 
 _HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",

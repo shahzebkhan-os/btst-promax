@@ -8,6 +8,7 @@ import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.nse import fetch_option_chain, parse_chain_to_df
 from src.universe import fetch_optionable_universe
+from src.expiry import fetch_expiries
 
 
 def main():
@@ -35,7 +36,9 @@ def main():
     for sym in universe:
         try:
             is_index = sym in {"NIFTY", "BANKNIFTY", "FINNIFTY", "SENSEX"}
-            chain = fetch_option_chain(sym, is_index=is_index)
+            expiries = fetch_expiries(sym)
+            expiry = expiries[0] if expiries else ""
+            chain = fetch_option_chain(sym, is_index=is_index, expiry=expiry)
             df = parse_chain_to_df(chain)
             df["symbol"] = sym
             df["timestamp_utc"] = ts
