@@ -46,6 +46,8 @@ df = pd.DataFrame({
     "gamma": [0.01 + (i%5)*0.002 for i in range(len(symbols))],
     "vega": [0.12 + (i%5)*0.03 for i in range(len(symbols))],
     "suggested_option": ["CALL" if i%2==0 else "PUT" for i in range(len(symbols))],
+    "option_price": [round(50 + (i%10)*2.5,2) for i in range(len(symbols))],
+    "option_value": [round(100 + (i%10)*5.0,2) for i in range(len(symbols))],
     "confidence": probs,
     "eta_sec": [round(5 - (i%5)*0.5,2) for i in range(len(symbols))],
     "last_update": ["2026-02-10 02:40" for _ in range(len(symbols))]
