@@ -28,14 +28,20 @@ def make_features(df: pd.DataFrame) -> pd.DataFrame:
     f["iv_atm"] = df["iv_atm"]
     f["iv_skew"] = df["iv_put_otm"] - df["iv_call_otm"]
     f["iv_term"] = df["iv_near"] - df["iv_next"]
+    f["iv_change_1"] = df["iv_atm"].diff(1)
+    f["iv_change_5"] = df["iv_atm"].diff(5)
 
     f["oi_atm"] = df["oi_atm"]
     f["oi_change"] = (df["oi_atm"] - df["oi_atm_prev"]) / df["oi_atm_prev"].replace(0, np.nan)
+    f["oi_change_5"] = df["oi_atm"].diff(5)
     f["pcr"] = df["oi_put"] / df["oi_call"].replace(0, np.nan)
 
     f["spread_atm"] = (df["ask_atm"] - df["bid_atm"]) / df["mid_atm"].replace(0, np.nan)
+    f["liquidity_score"] = (df["volume_atm"] / df["spread_atm"].replace(0, np.nan)).replace([np.inf, -np.inf], np.nan)
 
-    return f.replace([np.inf, -np.inf], np.nan).fillna(method="ffill").fillna(method="bfill")
+    f = f.replace([np.inf, -np.inf], np.nan)
+    f = f.ffill().bfill()
+    return f
 
 
 def make_targets(df: pd.DataFrame, horizon_days: int) -> Tuple[pd.Series, pd.Series, pd.Series]:
