@@ -46,17 +46,18 @@ import os
 if os.path.exists("data/features/latest.csv"):
     df = pd.read_csv("data/features/latest.csv")
 else:
-    # demo predictions (same length as symbols)
-    probs = [0.5 + (i % 10) * 0.01 for i in range(len(symbols))]
+    # demo predictions (same length as display list)
+    display = symbols[:50]
+    probs = [0.5 + (i % 10) * 0.01 for i in range(len(display))]
     df = pd.DataFrame({
-        "symbol": symbols[:50],
-        "price": [100 + i for i in range(len(symbols))],
-        "suggested_option": ["CALL" if i%2==0 else "PUT" for i in range(len(symbols))],
-        "option_price": [round(50 + (i%10)*2.5,2) for i in range(len(symbols))],
-        "option_value": [round(100 + (i%10)*5.0,2) for i in range(len(symbols))],
+        "symbol": display,
+        "price": [100 + i for i in range(len(display))],
+        "suggested_option": ["CALL" if i%2==0 else "PUT" for i in range(len(display))],
+        "option_price": [round(50 + (i%10)*2.5,2) for i in range(len(display))],
+        "option_value": [round(100 + (i%10)*5.0,2) for i in range(len(display))],
         "confidence": probs,
-        "eta_sec": [round(5 - (i%5)*0.5,2) for i in range(len(symbols))],
-        "last_update": ["2026-02-10 02:40" for _ in range(len(symbols))]
+        "eta_sec": [round(5 - (i%5)*0.5,2) for i in range(len(display))],
+        "last_update": ["2026-02-10 02:40" for _ in range(len(display))]
     })
 
 st.dataframe(df, use_container_width=True)
