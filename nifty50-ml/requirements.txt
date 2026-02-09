@@ -1,0 +1,17 @@
+numpy
+pandas
+scikit-learn
+torch
+torchvision
+pytorch-lightning
+lightgbm
+ta
+yfinance
+optuna
+mlflow
+streamlit
+joblib
+pydantic
+requests
+python-dotenv
+pytest
