@@ -15,6 +15,8 @@ def prune_by_l1(df: pd.DataFrame, target, C=0.1, max_features=50):
 
     X = df.fillna(0.0)
     y = np.asarray(target).ravel()
+    if len(np.unique(y)) < 2:
+        return X, []
     model = LogisticRegression(penalty="l1", solver="liblinear", C=C, max_iter=200)
     model.fit(X, y)
     coefs = np.abs(model.coef_).ravel()
@@ -32,6 +34,8 @@ def prune_by_shap(df: pd.DataFrame, target, max_features=50):
         from sklearn.ensemble import RandomForestClassifier
         X = df.fillna(0.0)
         y = np.asarray(target).ravel()
+        if len(np.unique(y)) < 2:
+            return X, []
         model = RandomForestClassifier(n_estimators=200, max_depth=6, random_state=42, n_jobs=-1)
         model.fit(X, y)
         explainer = shap.TreeExplainer(model)
