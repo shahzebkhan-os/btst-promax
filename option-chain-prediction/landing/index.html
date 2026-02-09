@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Option Chain Prediction • NSE</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="nav">
+        <div class="logo">OptionChainAI</div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#pipeline">Pipeline</a>
+          <a href="#cta">Get Access</a>
+        </div>
+      </nav>
+
+      <div class="hero-content">
+        <h1>Option Chain Prediction for NSE</h1>
+        <p>
+          Multi‑task ML for <strong>ΔIV</strong>, <strong>Premium Direction</strong>, and
+          <strong>ΔOI</strong> across intraday and 1‑day horizons.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#cta">Request Access</a>
+          <a class="btn secondary" href="#pipeline">View Pipeline</a>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <span class="label">Targets</span>
+            <span class="value">3</span>
+          </div>
+          <div class="metric">
+            <span class="label">Horizons</span>
+            <span class="value">2</span>
+          </div>
+          <div class="metric">
+            <span class="label">Market</span>
+            <span class="value">NSE</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="features" class="section">
+        <h2>Why it works</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Multi‑Task Models</h3>
+            <p>One pipeline predicts IV, premium direction, and OI change.</p>
+          </div>
+          <div class="card">
+            <h3>Option‑Chain Features</h3>
+            <p>Skew, term structure, liquidity, gamma proxies, and OI clusters.</p>
+          </div>
+          <div class="card">
+            <h3>Dual Horizons</h3>
+            <p>Intraday (30–60m) and next‑day targets built in.</p>
+          </div>
+          <div class="card">
+            <h3>NSE‑Specific</h3>
+            <p>Tailored for NSE option microstructure and liquidity constraints.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="pipeline" class="section dark">
+        <h2>Pipeline</h2>
+        <div class="pipeline">
+          <div class="step">Data Ingestion</div>
+          <div class="arrow">→</div>
+          <div class="step">Feature Store</div>
+          <div class="arrow">→</div>
+          <div class="step">Multi‑Task XGBoost</div>
+          <div class="arrow">→</div>
+          <div class="step">Predictions + Confidence</div>
+        </div>
+      </section>
+
+      <section id="cta" class="section">
+        <h2>Access the Application</h2>
+        <p>Run locally or deploy internally. Get the setup guide and data schema.</p>
+        <div class="cta-actions">
+          <button class="btn primary">Request Access</button>
+          <button class="btn secondary">Download Schema</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 OptionChainAI • NSE Option Chain Prediction</p>
+    </footer>
+  </body>
+</html>
