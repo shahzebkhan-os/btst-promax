@@ -25,7 +25,13 @@
     </header>
 
     <main>
-      <section id="overview" class="section">
+      <div class="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="signals">Signals</button>
+        <button class="tab" data-tab="heatmap">Heatmap</button>
+      </div>
+
+      <section id="overview" class="section tab-panel" data-panel="overview">
         <h2>Market Overview</h2>
         <div class="grid">
           <div class="card">
@@ -68,7 +74,7 @@
         </div>
       </section>
 
-      <section id="signals" class="section dark">
+      <section id="signals" class="section dark tab-panel" data-panel="signals" style="display:none;">
         <h2>Signals (15m)</h2>
         <div class="filters">
           <input id="filterInput" placeholder="Filter by symbol…" />
@@ -113,7 +119,7 @@
         <canvas id="probChart" height="120"></canvas>
       </section>
 
-      <section class="section">
+      <section class="section tab-panel" data-panel="heatmap" style="display:none;">
         <h2>Chain Heatmap Summary</h2>
         <div class="grid" id="heatmapGrid">
           <div class="card">
@@ -283,6 +289,21 @@
           applyFilters();
         });
       });
+
+      // tabs
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const target = btn.getAttribute('data-tab');
+          document.querySelectorAll('.tab-panel').forEach(p => {
+            p.style.display = p.getAttribute('data-panel') === target ? 'block' : 'none';
+          });
+        });
+      });
+
+      // ensure limit selector works
+      document.getElementById('limitSelect').value = '25';
 
       loadSentiment();
       loadSymbols();

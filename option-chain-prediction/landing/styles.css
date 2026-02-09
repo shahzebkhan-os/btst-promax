@@ -173,6 +173,25 @@ th.sortable {
   cursor: pointer;
 }
 
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 16px 10vw 0;
+}
+
+.tab {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--accent);
+}
+
 .table-wrap {
   overflow-x: auto;
   margin-top: 16px;
