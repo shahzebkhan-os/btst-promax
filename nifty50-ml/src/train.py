@@ -30,10 +30,25 @@ def main():
     p.add_argument("--min_stocks", type=int, default=25)
     args = p.parse_args()
 
-    # demo multi-stock data
-    n_stocks = max(args.min_stocks, 25)
-    X = np.random.randn(200*n_stocks, 10, 5)
-    y = np.random.randn(200*n_stocks, 1)
+    # real multi-stock data (Yahoo)
+    from src.ingest.universe import fetch_optionable_universe
+    from src.ingest.connectors import fetch_yahoo_ohlc
+
+    symbols = fetch_optionable_universe()[:max(args.min_stocks, 25)]
+    X_list, y_list = [], []
+    window = 20
+    for sym in symbols:
+        df = fetch_yahoo_ohlc(sym + ".NS", period="60d", interval="1d")
+        if df.empty or "Close" not in df.columns:
+            continue
+        close = df["Close"].astype(float).to_numpy().squeeze()
+        returns = np.diff(close) / close[:-1]
+        for i in range(window, len(returns)-1):
+            X_list.append(returns[i-window:i])
+            y_list.append(returns[i+1])
+
+    X = np.array(X_list)[:, :, None]
+    y = np.array(y_list)[:, None]
 
     ds = SeqDataset(X, y)
     dl = DataLoader(ds, batch_size=64, shuffle=True)
