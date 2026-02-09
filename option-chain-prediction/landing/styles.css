@@ -157,6 +157,10 @@ body {
   margin-bottom: 12px;
 }
 
+.filters {
+  flex-wrap: wrap;
+}
+
 .filters input, .filters select, .filters button {
   padding: 8px 10px;
   border-radius: 8px;
