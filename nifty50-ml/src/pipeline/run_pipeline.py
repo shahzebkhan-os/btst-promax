@@ -65,13 +65,20 @@ def process_symbol(symbol: str):
     option_price = 0.0
     option_value = 0.0
     try:
-        from src.ingest.connectors import fetch_historical_fo_range
+        from src.ingest.connectors import fetch_historical_fo_range, fetch_nse_option_chain
         ranges = [("01-01-2024","31-03-2024"),("01-04-2024","30-06-2024"),("01-07-2024","30-09-2024"),("01-10-2024","31-12-2024")]
         data = fetch_historical_fo_range(symbol, instrument="OPTSTK", ranges=ranges)
         if data:
             last = data[-1]
             option_price = float(last.get("Close", last.get("Settle Price", 0)) or 0)
             option_value = float(last.get("Premium Turnover", last.get("Turnover", 0)) or 0)
+        else:
+            chain = fetch_nse_option_chain(symbol)
+            records = chain.get("records", {}).get("data", [])
+            if records:
+                leg = records[0].get("CE") or records[0].get("PE") or {}
+                option_price = float(leg.get("lastPrice", 0) or 0)
+                option_value = float(leg.get("openInterest", 0) or 0)
     except Exception:
         pass
 
