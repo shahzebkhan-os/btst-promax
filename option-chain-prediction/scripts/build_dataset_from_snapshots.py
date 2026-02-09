@@ -1,16 +1,28 @@
 import glob
+import os
+import sys
 import pandas as pd
 import numpy as np
 from datetime import datetime
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.ohlc import fetch_ohlc
 
-def build_feature_row(df: pd.DataFrame) -> dict:
+
+def build_feature_row(df: pd.DataFrame, symbol: str) -> dict:
     # pick expiry with max OI
     df = df.copy()
     if df.empty:
         return {}
 
     underlying = df["underlying"].dropna().iloc[0] if df["underlying"].notna().any() else np.nan
+
+    ohlc = fetch_ohlc(symbol, days=60)
+    if not ohlc.empty:
+        underlying = ohlc["close"].iloc[-1]
+        underlying_vol = ohlc["volume"].iloc[-1]
+    else:
+        underlying_vol = np.nan
     df["dist"] = (df["strike"] - underlying).abs()
     atm = df.sort_values("dist").head(1)
     if atm.empty:
@@ -40,7 +52,7 @@ def build_feature_row(df: pd.DataFrame) -> dict:
 
     return {
         "underlying_close": underlying,
-        "underlying_volume": np.nan,
+        "underlying_volume": underlying_vol,
         "iv_atm": iv_atm,
         "iv_put_otm": iv_put_otm,
         "iv_call_otm": iv_call_otm,
@@ -66,7 +78,7 @@ def main():
         if "symbol" not in df.columns:
             continue
         for sym, grp in df.groupby("symbol"):
-            row = build_feature_row(grp)
+            row = build_feature_row(grp, sym)
             if row:
                 row["symbol"] = sym
                 row["timestamp"] = f.split("/")[-1].replace(".csv", "")

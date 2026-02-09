@@ -1,25 +1,33 @@
 import argparse
 import time
+import os
+import sys
 from datetime import datetime
 import pandas as pd
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.nse import fetch_option_chain, parse_chain_to_df
 from src.universe import fetch_optionable_universe
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--index", action="store_true", help="Use index chain endpoint")
-    parser.add_argument("--sleep", type=float, default=0.6, help="Seconds between symbols")
+    parser.add_argument("--sleep", type=float, default=0.8, help="Seconds between symbols")
     parser.add_argument("--out", default="data/intraday_snapshot.csv")
     args = parser.parse_args()
 
-    universe = fetch_optionable_universe()["symbol"].tolist()
+    try:
+        universe = fetch_optionable_universe()["symbol"].tolist()
+    except Exception:
+        universe = ["NIFTY", "BANKNIFTY"]
+
     rows = []
     ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     for sym in universe:
         try:
-            chain = fetch_option_chain(sym, is_index=args.index)
+            is_index = sym in {"NIFTY", "BANKNIFTY", "FINNIFTY", "SENSEX"}
+            chain = fetch_option_chain(sym, is_index=is_index)
             df = parse_chain_to_df(chain)
             df["symbol"] = sym
             df["timestamp_utc"] = ts
