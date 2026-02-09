@@ -46,10 +46,34 @@ def walk_forward(returns, window=20, train_size=500, test_size=100, conf=0.6, fe
         Xte = X_test.reshape(len(X_test), -1)
         y_cls = (y_train.flatten() > 0).astype(int)
         rf.fit(Xtr, y_cls)
-        preds = rf.predict_proba(Xte)
+        rf_preds = rf.predict_proba(Xte)
+
+        # LSTM on sequences
+        model = LSTM()
+        opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+        loss_fn = nn.MSELoss()
+        loader = DataLoader(SeqDataset(X_train, y_train), batch_size=64, shuffle=True)
+        for _ in range(5):
+            for xb,yb in loader:
+                pred = model(xb)
+                loss = loss_fn(pred, yb)
+                opt.zero_grad(); loss.backward(); opt.step()
+        with torch.no_grad():
+            lstm_preds = model(torch.tensor(X_test, dtype=torch.float32)).numpy().flatten()
+        # scale LSTM preds to 0-1
+        lmin, lmax = lstm_preds.min(), lstm_preds.max()
+        lstm_probs = (lstm_preds - lmin) / (lmax - lmin + 1e-9)
+
+        # ensemble: average probs
+        preds = (rf_preds + lstm_probs) / 2
 
         # calibrate using train preds
-        train_preds = rf.predict_proba(Xtr)
+        train_rf = rf.predict_proba(Xtr)
+        with torch.no_grad():
+            train_lstm = model(torch.tensor(X_train, dtype=torch.float32)).numpy().flatten()
+        tmin, tmax = train_lstm.min(), train_lstm.max()
+        train_lstm = (train_lstm - tmin) / (tmax - tmin + 1e-9)
+        train_preds = (train_rf + train_lstm) / 2
         calib = Calibrator().fit(train_preds, y_cls)
         probs = calib.transform(preds)
 
