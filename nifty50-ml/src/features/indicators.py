@@ -10,6 +10,8 @@ except Exception:
 def add_indicators(df: pd.DataFrame):
     d = df.copy()
     close = d["Close"]
+    if isinstance(close, pd.DataFrame):
+        close = close.iloc[:, 0]
     if hasattr(close, "values"):
         close = pd.Series(close.values.squeeze(), index=d.index)
     if ta:
