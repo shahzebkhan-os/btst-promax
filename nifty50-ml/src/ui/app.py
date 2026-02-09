@@ -7,23 +7,27 @@ st.set_page_config(page_title="NIFTY50 ML", layout="wide")
 st.title("NIFTY50 Options ML Dashboard")
 st.caption("Research/Educational only — Not financial advice")
 
-symbols = [
-    "ADANIPORTS","ASIANPAINT","AXISBANK","BAJAJ-AUTO","BAJFINANCE","BAJAJFINSV",
-    "BPCL","BHARTIARTL","BRITANNIA","CIPLA","COALINDIA","DIVISLAB","DRREDDY",
-    "EICHERMOT","GRASIM","HCLTECH","HDFCBANK","HDFCLIFE","HEROMOTOCO",
-    "HINDALCO","HINDUNILVR","ICICIBANK","INDUSINDBK","INFY","ITC",
-    "JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NESTLEIND",
-    "NTPC","ONGC","POWERGRID","RELIANCE","SBIN","SHREECEM",
-    "SUNPHARMA","TATAMOTORS","TATASTEEL","TCS","TECHM","TITAN",
-    "ULTRACEMCO","UPL","WIPRO","ADANIENT","APOLLOHOSP"
-]
+try:
+    from src.ingest.universe import fetch_optionable_universe
+    symbols = fetch_optionable_universe()
+except Exception:
+    symbols = [
+        "ADANIPORTS","ASIANPAINT","AXISBANK","BAJAJ-AUTO","BAJFINANCE","BAJAJFINSV",
+        "BPCL","BHARTIARTL","BRITANNIA","CIPLA","COALINDIA","DIVISLAB","DRREDDY",
+        "EICHERMOT","GRASIM","HCLTECH","HDFCBANK","HDFCLIFE","HEROMOTOCO",
+        "HINDALCO","HINDUNILVR","ICICIBANK","INDUSINDBK","INFY","ITC",
+        "JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NESTLEIND",
+        "NTPC","ONGC","POWERGRID","RELIANCE","SBIN","SHREECEM",
+        "SUNPHARMA","TATAMOTORS","TATASTEEL","TCS","TECHM","TITAN",
+        "ULTRACEMCO","UPL","WIPRO","ADANIENT","APOLLOHOSP"
+    ]
 eta = ETAState()
 
 st.subheader("Progress")
 progress = st.progress(0)
 status = st.empty()
 
-for i, s in enumerate(symbols, 1):
+for i, s in enumerate(symbols[:50], 1):
     eta.update(s, 0.2)
     progress.progress(i/len(symbols))
     status.write(f"Processed {s} · ETA {eta.estimate(symbols[i:], workers=2):.2f}s")
@@ -39,7 +43,7 @@ else:
     # demo predictions (same length as symbols)
     probs = [0.5 + (i % 10) * 0.01 for i in range(len(symbols))]
     df = pd.DataFrame({
-        "symbol": symbols,
+        "symbol": symbols[:50],
         "price": [100 + i for i in range(len(symbols))],
         "suggested_option": ["CALL" if i%2==0 else "PUT" for i in range(len(symbols))],
         "option_price": [round(50 + (i%10)*2.5,2) for i in range(len(symbols))],
