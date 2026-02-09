@@ -31,12 +31,13 @@ docker compose up --build
 ## Features
 - NIFTY50 + components ingestion (OHLCV + option chain)
 - Indicators: SMA/EMA/Hull, RSI, Stoch, ATR, HV, BB width, OBV, VWAP, MACD, ADX, candle patterns
-- Options: IV surface fitting, PCR, ΔOI, Greeks (delta/vega)
+- Options: IV surface fitting, PCR, ΔOI, Greeks (delta/gamma/vega)
 - Models: LSTM, CNN, Transformer + LightGBM stacking
 - ETA progress (EMA timing)
 - Streamlit UI + CLI + JSON progress
 - Backtester with slippage + fees
-- MLflow tracking
+- MLflow tracking + Optuna HPO
+- Drift monitoring + SHAP explainability (optional)
 
 ## Notes
 - For real option-chain data, configure broker/Kite credentials in `.env`.
