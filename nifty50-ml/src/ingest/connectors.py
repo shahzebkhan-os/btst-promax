@@ -3,6 +3,7 @@ import pandas as pd
 import yfinance as yf
 import requests
 from pathlib import Path
+from .cookies import load_cookies
 
 NSE_BASE = "https://www.nseindia.com"
 
@@ -17,6 +18,9 @@ def _session():
     s = requests.Session()
     s.headers.update(HEADERS)
     s.get(NSE_BASE, timeout=10)
+    cookies = load_cookies()
+    if cookies:
+        s.cookies.update(cookies)
     return s
 
 
@@ -31,9 +35,17 @@ def fetch_nse_option_chain(symbol: str, expiry: str = ""):
     params = {"symbol": symbol, "type": "Indices" if symbol in ["NIFTY","BANKNIFTY","FINNIFTY"] else "Equity"}
     if expiry:
         params["expiry"] = expiry
-    r = s.get(url, params=params, timeout=10)
+    for _ in range(3):
+        r = s.get(url, params=params, timeout=10)
+        if r.status_code == 401:
+            s = _session()
+            continue
+        if r.status_code == 503:
+            time.sleep(1)
+            continue
+        r.raise_for_status()
+        return r.json()
     r.raise_for_status()
-    return r.json()
 
 
 def fetch_historical_fo(symbol: str, instrument: str, from_date: str, to_date: str,
@@ -53,9 +65,17 @@ def fetch_historical_fo(symbol: str, instrument: str, from_date: str, to_date: s
         params["strikePrice"] = strike
     if option_type:
         params["optionType"] = option_type
-    r = s.get(url, params=params, timeout=10)
+    for _ in range(3):
+        r = s.get(url, params=params, timeout=10)
+        if r.status_code == 401:
+            s = _session()
+            continue
+        if r.status_code == 503:
+            time.sleep(1)
+            continue
+        r.raise_for_status()
+        return r.json()
     r.raise_for_status()
-    return r.json()
 
 
 def fetch_historical_fo_range(symbol: str, instrument: str, ranges: list,
