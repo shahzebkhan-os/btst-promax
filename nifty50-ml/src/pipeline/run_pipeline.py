@@ -28,10 +28,18 @@ def process_symbol(symbol: str):
     vol = float(pruned["Close"].pct_change().std() or 0)
     regime = detect_regime(vol)
 
-    # dummy prediction + calibration
-    raw_prob = 0.55 if regime == "low" else 0.6 if regime == "mid" else 0.65
-    calib = Calibrator().fit([0.4,0.5,0.6,0.7],[0,0,1,1])
-    prob = float(calib.transform([raw_prob])[0])
+    # simple regime-aware raw probability
+    raw_prob = 0.52 if regime == "low" else 0.6 if regime == "mid" else 0.68
+
+    # fit calibrator on a rolling validation window (next-return > 0)
+    returns = pruned["Close"].pct_change().fillna(0).values
+    y = (returns[1:] > 0).astype(int)
+    x = (returns[:-1] - returns[:-1].min()) / (returns[:-1].ptp() + 1e-9)
+    if len(x) > 10:
+        calib = Calibrator().fit(x, y)
+        prob = float(calib.transform([raw_prob])[0])
+    else:
+        prob = raw_prob
 
     # dummy options
     options = [{"strike": 100, "cost": 5, "payoff": 12}, {"strike": 110, "cost": 3, "payoff": 7}]
