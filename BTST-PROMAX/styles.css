@@ -1,0 +1,70 @@
+:root {
+  /* PROFESSIONAL TRADING THEME */
+  --color-bullish: #00C087; /* Calm green, not aggressive */
+  --color-bearish: #FF6B6B; /* Alert red, not panic */
+  --color-neutral: #64748B; /* Professional gray */
+  --color-highlight: #3B82F6; /* Trust blue */
+
+  /* Backgrounds */
+  --bg-primary: #0F172A; /* Deep space - reduces eye strain */
+  --bg-secondary: #1E293B; /* Card backgrounds */
+  --bg-tertiary: #334155; /* Hover states */
+
+  /* Data Visualization */
+  --chart-up: #10B981; /* Emerald for gains */
+  --chart-down: #EF4444; /* Ruby for losses */
+  --chart-volume: rgba(59, 130, 246, 0.3); /* Volume */
+
+  /* Alerts & Status */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+}
+
+/* DARK/LIGHT THEME TOGGLE */
+.light-theme {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --text-primary: #1E293B;
+  /* ... optimized for daylight trading */
+}
+
+/* Accessibility First */
+:root {
+  --font-size-base: 16px;
+  --font-size-large: 20px; /* For visually impaired */
+  --line-height: 1.6;
+}
+
+.high-contrast {
+  --color-bullish: #00FF00;
+  --color-bearish: #FF0000;
+  --bg-primary: #000000;
+  --text-primary: #FFFFFF;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.keyboard-focus {
+  outline: 3px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

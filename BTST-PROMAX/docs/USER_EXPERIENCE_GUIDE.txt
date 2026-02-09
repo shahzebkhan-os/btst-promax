@@ -1,0 +1,42 @@
+BTST PROMAX: ULTIMATE USER EXPERIENCE DESIGN
+PHILOSOPHY: 3-CLICK TRADING DECISIONS
+
+Core UX Principles
+1. Zero Learning Curve → Intuitive from day 1
+2. 3-Second Comprehension → Glanceable insights
+3. 3-Click Execution → Paper trading in seconds
+4. Context-Aware Help → Just-in-time guidance
+5. Progressive Disclosure → Advanced features on demand
+6. Emotional Design → Stress-reducing visual language
+
+VISUAL DESIGN SYSTEM
+Color Psychology & Themes
+
+:root {
+  /* PROFESSIONAL TRADING THEME */
+  --color-bullish: #00C087; /* Calm green, not aggressive */
+  --color-bearish: #FF6B6B; /* Alert red, not panic */
+  --color-neutral: #64748B; /* Professional gray */
+  --color-highlight: #3B82F6; /* Trust blue */
+
+  /* Backgrounds */
+  --bg-primary: #0F172A; /* Deep space - reduces eye strain */
+  --bg-secondary: #1E293B; /* Card backgrounds */
+  --bg-tertiary: #334155; /* Hover states */
+
+  /* Data Visualization */
+  --chart-up: #10B981; /* Emerald for gains */
+  --chart-down: #EF4444; /* Ruby for losses */
+  --chart-volume: rgba(59, 130, 246, 0.3); /* Alerts & Status */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+}
+
+/* DARK/LIGHT THEME TOGGLE */
+.light-theme {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --text-primary: #1E293B; /* ... optimized for daylight trading */
+}
