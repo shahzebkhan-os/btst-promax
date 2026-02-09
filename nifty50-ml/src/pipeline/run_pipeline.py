@@ -25,7 +25,10 @@ def process_symbol(symbol: str):
     pruned, dropped = prune_by_correlation(num, threshold=0.95)
 
     # regime detection (volatility proxy)
-    vol = float(pruned["Close"].pct_change().std() or 0)
+    close_series = pruned["Close"]
+    if hasattr(close_series, "values") and getattr(close_series, "ndim", 1) > 1:
+        close_series = close_series.iloc[:, 0]
+    vol = float(close_series.pct_change().std() or 0)
     regime = detect_regime(vol)
 
     # regime-specific model proxy (placeholder for real models)
