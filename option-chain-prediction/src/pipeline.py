@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, roc_auc_score
 from sklearn.calibration import CalibratedClassifierCV
 from xgboost import XGBRegressor, XGBClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 
 
 @dataclass
@@ -69,9 +70,10 @@ def train_pipeline(df: pd.DataFrame, config: PipelineConfig):
     X_train_s = scaler.fit_transform(X_train)
     X_test_s = scaler.transform(X_test)
 
-    iv_model = XGBRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
-    oi_model = XGBRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
-    base_dir_model = XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9)
+    # Random Forest models for stability
+    iv_model = RandomForestRegressor(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1)
+    oi_model = RandomForestRegressor(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1)
+    base_dir_model = RandomForestClassifier(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1)
 
     iv_model.fit(X_train_s, y_iv_train)
     oi_model.fit(X_train_s, y_oi_train)
