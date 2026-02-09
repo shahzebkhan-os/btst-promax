@@ -1,6 +1,10 @@
 import json
+import os
+import sys
 import pandas as pd
 from datetime import datetime
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.sentiment import score_news, score_price_action
 
 NEWS_PATH = "data/news_headlines.csv"  # optional: columns: headline

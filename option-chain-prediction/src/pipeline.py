@@ -36,8 +36,9 @@ def make_features(df: pd.DataFrame) -> pd.DataFrame:
     f["oi_change_5"] = df["oi_atm"].diff(5)
     f["pcr"] = df["oi_put"] / df["oi_call"].replace(0, np.nan)
 
-    f["spread_atm"] = (df["ask_atm"] - df["bid_atm"]) / df["mid_atm"].replace(0, np.nan)
-    f["liquidity_score"] = (df["volume_atm"] / df["spread_atm"].replace(0, np.nan)).replace([np.inf, -np.inf], np.nan)
+    spread_atm = (df["ask_atm"] - df["bid_atm"]) / df["mid_atm"].replace(0, np.nan)
+    f["spread_atm"] = spread_atm
+    f["liquidity_score"] = (df["volume_atm"] / spread_atm.replace(0, np.nan)).replace([np.inf, -np.inf], np.nan)
 
     f = f.replace([np.inf, -np.inf], np.nan)
     f = f.ffill().bfill()

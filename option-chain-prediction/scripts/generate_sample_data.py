@@ -23,6 +23,7 @@ bid_atm = mid_atm - np.random.uniform(2, 8, rows)
 ask_atm = mid_atm + np.random.uniform(2, 8, rows)
 
 premium_atm = mid_atm + np.random.normal(0, 4, rows)
+volume_atm = np.random.randint(500, 5000, rows)
 
 sample = pd.DataFrame({
     "underlying_close": underlying_close,
@@ -40,6 +41,7 @@ sample = pd.DataFrame({
     "bid_atm": bid_atm,
     "mid_atm": mid_atm,
     "premium_atm": premium_atm,
+    "volume_atm": volume_atm,
 })
 
 out = "data/sample_train.csv"
