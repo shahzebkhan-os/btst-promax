@@ -139,7 +139,7 @@
     <script>
       async function loadSentiment() {
         try {
-          const res = await fetch('data/sentiment.json');
+          const res = await fetch(`data/sentiment.json?t=${Date.now()}`);
           const s = await res.json();
           document.getElementById('sentimentLabel').textContent = s.sentiment;
           document.getElementById('sentimentConf').textContent = `Confidence: ${s.confidence}`;
@@ -210,7 +210,7 @@
 
       async function loadSymbols() {
         try {
-          const res = await fetch('data/predictions.csv');
+          const res = await fetch(`data/predictions.csv?t=${Date.now()}`);
           const text = await res.text();
           const lines = text.trim().split('\n');
           const headers = lines[0].split(',');
