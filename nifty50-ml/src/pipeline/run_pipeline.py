@@ -28,8 +28,13 @@ def process_symbol(symbol: str):
     vol = float(pruned["Close"].pct_change().std() or 0)
     regime = detect_regime(vol)
 
-    # simple regime-aware raw probability
-    raw_prob = 0.52 if regime == "low" else 0.6 if regime == "mid" else 0.68
+    # regime-specific model proxy (placeholder for real models)
+    if regime == "low":
+        raw_prob = 0.52
+    elif regime == "mid":
+        raw_prob = 0.6
+    else:
+        raw_prob = 0.68
 
     # fit calibrator on a rolling validation window (next-return > 0)
     returns = pruned["Close"].pct_change().fillna(0).values
