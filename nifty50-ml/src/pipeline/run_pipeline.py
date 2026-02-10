@@ -102,6 +102,7 @@ def process_symbol(symbol: str):
     except Exception:
         pass
 
+    price_override = None
     # fallback: use browser-scraped bulk CSV if present
     if option_price <= 0 or option_value <= 0:
         try:
@@ -110,13 +111,18 @@ def process_symbol(symbol: str):
                 df_bulk = pd.read_csv(bulk_path)
                 df_sym = df_bulk[df_bulk["symbol"] == symbol]
                 if not df_sym.empty:
-                    # choose latest expiry row with max OI around ATM
+                    # choose row with max OI around ATM
+                    df_sym = df_sym.copy()
                     df_sym["ce_openInterest"] = pd.to_numeric(df_sym["ce_openInterest"], errors="coerce")
                     df_sym["pe_openInterest"] = pd.to_numeric(df_sym["pe_openInterest"], errors="coerce")
                     df_sym["score"] = df_sym["ce_openInterest"].fillna(0) + df_sym["pe_openInterest"].fillna(0)
                     row = df_sym.sort_values("score", ascending=False).iloc[0]
                     option_price = float(row.get("ce_lastPrice") or row.get("pe_lastPrice") or 0)
                     option_value = float(row.get("ce_openInterest") or row.get("pe_openInterest") or 0)
+                    try:
+                        price_override = float(row.get("underlying") or 0)
+                    except Exception:
+                        price_override = None
         except Exception:
             pass
 
@@ -128,7 +134,7 @@ def process_symbol(symbol: str):
     top = recs[0]
     return {
         "symbol": symbol,
-        "price": float(df["Close"].iloc[-1, 0]) if "Close" in df.columns and hasattr(df["Close"], "ndim") and df["Close"].ndim > 1 else float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0,
+        "price": float(price_override) if price_override else (float(df["Close"].iloc[-1, 0]) if "Close" in df.columns and hasattr(df["Close"], "ndim") and df["Close"].ndim > 1 else float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0),
         "confidence": prob,
         "suggested_option": "CALL" if prob >= 0.5 else "PUT",
         "option_price": float(top.get("cost", 0)),
