@@ -19,6 +19,8 @@ from src.features.prune import prune_by_correlation, prune_by_l1, prune_by_shap
 from src.models.regime import detect_regime, detect_regime_series
 from src.options.labeling import label_option_pnl
 from src.utils.leakage import detect_leakage
+from src.models.random_forest import RFModel
+from sklearn.metrics import accuracy_score
 
 
 KITE_LTP_CACHE = {}
@@ -60,7 +62,7 @@ def process_symbol(symbol: str):
     df = add_indicators(df.rename(columns=str.title))
 
     # label option P&L (proxy on close for T+1/T+3)
-    df = label_option_pnl(df, price_col="Close", horizons=(1, 3), no_trade_threshold=0.005)
+    df = label_option_pnl(df, price_col="Close", horizons=(1, 3), no_trade_threshold=0.003)
 
     # feature pruning (numeric cols only)
     num = df.select_dtypes(include="number").fillna(0)
@@ -95,28 +97,35 @@ def process_symbol(symbol: str):
     else:
         raw_prob = 0.68
 
-    # calibrate per regime using next-return > 0
-    returns = pruned["Close"].pct_change().fillna(0).values.squeeze()
-    x = returns[:-1]
-    y = (returns[1:] > 0).astype(int)
-    if len(x) > 20:
-        denom = x.ptp()
-        if denom == 0:
-            x_norm = np.zeros_like(x)
+    # train a real model (time-split) for probability + accuracy
+    prob = raw_prob
+    model_acc = 0.0
+    try:
+        features = pruned.drop(columns=["label_1", "label_3"], errors="ignore")
+        target = (close_for_target.pct_change().shift(-1) > 0).fillna(0).astype(int)
+        # align lengths
+        min_len = min(len(features), len(target))
+        features = features.iloc[:min_len]
+        target = target.iloc[:min_len]
+        # time-based split
+        split = int(len(features) * 0.8)
+        if split > 30:
+            X_train = features.iloc[:split].fillna(0)
+            y_train = target.iloc[:split].values
+            X_test = features.iloc[split:].fillna(0)
+            y_test = target.iloc[split:].values
+            rf = RFModel(n_estimators=400, max_depth=8)
+            rf.fit(X_train, y_train)
+            # probability for latest row
+            prob = float(rf.predict_proba(features.tail(1).fillna(0))[0])
+            # accuracy on test
+            y_pred = (rf.predict_proba(X_test) >= 0.5).astype(int)
+            model_acc = float(accuracy_score(y_test, y_pred))
         else:
-            x_norm = (x - x.min()) / (denom + 1e-9)
-        mask = (~np.isnan(x_norm)) & (~np.isnan(y))
-        x_norm = x_norm[mask]
-        y = y[mask]
-        regimes = detect_regime_series(pd.Series(x_norm).rolling(60).std().fillna(0))
-        if len(x_norm) > 20:
-            calib = RegimeCalibrator(method_by_regime={"low": "platt", "mid": "isotonic", "high": "isotonic"})
-            calib.fit(regimes, x_norm, y)
-            prob = float(calib.transform([regime], [raw_prob])[0])
-        else:
-            prob = raw_prob
-    else:
+            model_acc = 0.0
+    except Exception:
         prob = raw_prob
+        model_acc = 0.0
 
     # pull latest live option chain snapshot (best‑effort)
     option_price = 0.0
@@ -177,14 +186,24 @@ def process_symbol(symbol: str):
     options = [{"strike": 100, "cost": option_price, "payoff": option_value}]
     recs = recommend(options, p_up=prob)
     top = recs[0]
+
+    # stricter thresholds to surface real PUT opportunities
+    if prob >= 0.55:
+        side = "CALL"
+    elif prob <= 0.45:
+        side = "PUT"
+    else:
+        side = "NEUTRAL"
+
     return {
         "symbol": symbol,
         "price": float(price_override) if price_override else (float(df["Close"].iloc[-1, 0]) if "Close" in df.columns and hasattr(df["Close"], "ndim") and df["Close"].ndim > 1 else float(df["Close"].iloc[-1]) if "Close" in df.columns else 0.0),
         "confidence": prob,
-        "suggested_option": "CALL" if prob >= 0.5 else "PUT",
+        "suggested_option": side,
         "option_price": float(top.get("cost", 0)),
         "option_value": float(top.get("payoff", 0)),
         "regime": regime,
+        "model_accuracy": model_acc,
         "dropped_features": len(dropped) + len(l1_dropped) + len(shap_dropped),
         "leakage_flags": ";".join(leak_flags) if leak_flags else ""
     }
