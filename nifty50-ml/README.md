@@ -62,16 +62,17 @@ Files: `src/features/indicators.py`, `src/features/prune.py`
 - Computes indicators (RSI, MACD, etc.)
 - Prunes correlated features (threshold 0.95)
 
-### 3) Regime Detection + Calibration
-Files: `src/models/regime.py`, `src/models/calibration.py`
+### 3) Regime Detection
+Files: `src/models/regime.py`
 - Volatility‑based regime (low/mid/high)
-- Calibrates probabilities on rolling validation data
+- Used as context (not the final prediction output)
 
-### 4) Model & Ensemble
-Files: `src/backtest/walkforward.py`, `src/models/random_forest.py`
-- **RF + LSTM ensemble** in walk‑forward backtest
-- Calibration + confidence thresholding
-- Volatility‑adjusted position sizing
+### 4) Model (current pipeline)
+Files: `src/pipeline/run_pipeline.py`, `src/models/random_forest.py`
+- **RandomForest classifier** trained per‑symbol on recent OHLCV features
+- **Time‑based split** (first 80% train, last 20% test)
+- **Probability output** used for CALL/PUT/NEUTRAL
+- Reports **high‑confidence accuracy** (prob ≥ 0.6 or ≤ 0.4) + coverage
 
 ### 5) Option Suggestions
 Files: `src/options/recommender.py`
@@ -124,6 +125,17 @@ python3 scripts/tune_thresholds.py
 - Drift monitoring + SHAP explainability (optional)
 
 ---
+
+## Model Parameters (current pipeline)
+- **Model:** RandomForest (n_estimators=400, max_depth=8)
+- **Train/Test split:** 80% train / 20% test (time order)
+- **Signal thresholds:** CALL ≥ 0.55, PUT ≤ 0.45, else NEUTRAL
+- **High‑confidence accuracy:** evaluated on prob ≥ 0.6 or ≤ 0.4
+
+## Live Price Sources (priority)
+1) **Kite LTP** (requires `KITE_API_KEY` + `KITE_ACCESS_TOKEN` in `.env`)
+2) **NSE bulk option‑chain CSV** (`nse_fno_bulk_option_chain.csv`)
+3) **Yahoo intraday** (fallback)
 
 ## Notes
 - For real option-chain data, configure broker/Kite credentials in `.env`.
