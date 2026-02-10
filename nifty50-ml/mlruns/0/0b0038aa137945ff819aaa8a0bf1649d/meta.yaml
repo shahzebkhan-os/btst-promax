@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/0b0038aa137945ff819aaa8a0bf1649d/artifacts
+end_time: 1770672481521
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 0b0038aa137945ff819aaa8a0bf1649d
+run_name: salty-shrimp-486
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770672469490
+status: 4
+tags: []
+user_id: aayan

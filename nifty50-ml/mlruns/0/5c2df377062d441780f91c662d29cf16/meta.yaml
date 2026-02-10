@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/5c2df377062d441780f91c662d29cf16/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5c2df377062d441780f91c662d29cf16
+run_name: suave-toad-365
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770674773512
+status: 1
+tags: []
+user_id: aayan

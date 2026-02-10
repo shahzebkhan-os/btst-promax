@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/7228ce0ce1d14727af70f07b548fcce8/artifacts
+end_time: 1770676525672
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7228ce0ce1d14727af70f07b548fcce8
+run_name: vaunted-chimp-556
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770676411692
+status: 3
+tags: []
+user_id: aayan

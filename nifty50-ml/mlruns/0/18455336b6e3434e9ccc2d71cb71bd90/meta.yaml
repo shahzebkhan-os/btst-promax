@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/18455336b6e3434e9ccc2d71cb71bd90/artifacts
+end_time: 1770674949233
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 18455336b6e3434e9ccc2d71cb71bd90
+run_name: nimble-shrike-763
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770674854119
+status: 3
+tags: []
+user_id: aayan

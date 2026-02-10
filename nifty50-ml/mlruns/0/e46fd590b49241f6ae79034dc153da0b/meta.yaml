@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/e46fd590b49241f6ae79034dc153da0b/artifacts
+end_time: 1770673021905
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e46fd590b49241f6ae79034dc153da0b
+run_name: luxuriant-shad-183
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770673005266
+status: 4
+tags: []
+user_id: aayan

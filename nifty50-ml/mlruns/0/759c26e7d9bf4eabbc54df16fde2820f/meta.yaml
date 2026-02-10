@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/759c26e7d9bf4eabbc54df16fde2820f/artifacts
+end_time: 1770677197303
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 759c26e7d9bf4eabbc54df16fde2820f
+run_name: persistent-whale-770
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770677011726
+status: 4
+tags: []
+user_id: aayan

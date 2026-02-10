@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/471318f0703345cbaa3ffee836c1855e/artifacts
+end_time: 1770671876798
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 471318f0703345cbaa3ffee836c1855e
+run_name: welcoming-hen-464
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770671862697
+status: 4
+tags: []
+user_id: aayan

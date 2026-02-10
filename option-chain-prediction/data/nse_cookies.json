@@ -1,0 +1,82 @@
+[
+  {
+    "name": "AKA_A2",
+    "value": "A",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1770673980.909589,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "bm_sz",
+    "value": "5C6F48EF4BDAE7F5230C24D1F30A7388~YAAQXAVaaGhIFyGcAQAA8tctRB7i49wIsHs1uI3Ris6dcd8sHQVpJvPhhxojGahDSHqJO0q5Kn4H/0bB9AsF7H2MGsztYrGi8oWfwT2CehFK5SZTtDHJD38KJ5pvQ7AUWB4g2b621jmG7hWnMyTBkbYSDaBZyq1sgOkY0sJHf4GdlJXaxqipBFR+PaTMWI2D0HbC9wxxtmTiuOYf0qo79/xT/s4BHBhWHaRiFUfimNmQkCxo5SKgqJQIUmWTGvlPoJtm0QVAdJJEZKk9pBEhDzRQGauQe8VFZRm13K9dfyD4K0ybGHJfTaI1Lcsyhz/EbOdnufXDaKcqgDPJRIVcQZPD+LJ6gRD7wnuhELDOWXJn1SB1Lp/LncE/vwEMaMQDySzOvU84RLT849rwuEM=~3491137~3551811",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1770684780.910053,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ga",
+    "value": "GA1.1.83974275.1770670382",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1805230382.003219,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ga_87M7PJ3R97",
+    "value": "GS2.1.s1770670381$o1$g1$t1770670382$j59$l0$h0",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1805230382.015946,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "ak_bmsc",
+    "value": "AFD38B7D6FC68CE5A4801E12C36EC4C6~000000000000000000000000000000~YAAQXAVaaHRIFyGcAQAA990tRB6HynxMHrv2COVrfg54kWK+kv3XZEzSPaoeZtm5X+WICQgCdF9NcI57BfO6IJSMMPIfalJzbWjZBJaaFfmi7WNmgceGdzzKN/3wknVoKMJ9ojZRK6EDPDm6MAs91vC3bUUWaFv0aEKLhAQ3dvJZUjiUdd1hSbY0bsnHp0VcELn71xHUjBdQXdMo6a8hi4eYqBMzPaaD9UKgTQT4a2Fh77AnsXSlJ9aa5qAj15Wk70K6vaFFWed+OCVoTVHs7xwKi1pRzt0+GiE5K7rd5IqMdHQVVZEC2zskCtU/98KtoHIpJ4K86ZyKo1e0jYDAsCESZ4YQaxdmS0rbATaCfJB7V7v6BjFXQ8vY1raqT23E+jf6q9aOyyCjYGAV1qtk5zU9M5l1MGqZcsxw9G782wzK0YWXwKZUzPSkxCu112Zdee6YwXL2bh792IpaXCu9F+2ehEkgwSRI6+m9HnTnNvKHw+b3f8R4olbMpN9gxwBVq88=",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1770677581.447394,
+    "httpOnly": true,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "bm_sv",
+    "value": "9502359F4386D91620A5123600E55206~YAAQXAVaaHVIFyGcAQAAE94tRB5jRzV2y8AMKwbqHdnkNZiCVw1gq7W0+4adjD21u8owvs/Y9OkWzmvnR0mpC0Z/NsknEid2DBjMnLsxUAkOO+jaSvu1Lg1kXPuoSQ7GZTpNKl8edFBKCqOyKrSqhqxDoKxAL1GPiC1gxgeZ3kiHlUfAGj5vHrXp8oBA2xfahW6AzDS3TV4x6IRKAK36ljdvbBXQNYnmUugpuXPxxL6Y5GYUDv2ycdIyU8CXUbYE2xw=~1",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1770677582.477362,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "RT",
+    "value": "\"z=1&dm=nseindia.com&si=f5489816-a0bd-4cfb-b881-0e37b230a284&ss=mlfnfdq8&sl=1&se=8c&tt=18f&bcn=%2F%2F684d0d42.akstat.io%2F&ld=2o7\"",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1771275184,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_abck",
+    "value": "9D65EDFE3BB2015383580AB2E436E1DC~-1~YAAQXAVaaHdIFyGcAQAAzOktRA+ZEqNhBXaODoEtkQ4+h+LHLYIm89TGObUQDUo6A8B97mv0Uw14WWRcY9Gk84Pqbc+zr5qN1B+UbroWyCPofNPH5RZh1BXm89cx451Id0D5uB3fJohGXGurGoDerT+2cHAxNbhkXS8P+0ipY0IQGWi3V1EWKXLNc/97YCN56INTVoJIH8YRV4VxZFytRobqLULTCGbXvokc0aPw+4vEH03abYBzuQeJg+PmVyeE5hiMhWaQE+1++R09rUZT4MuqUjewgAQezsLIGY55P+iK7Jaw61za3kRXp7hC1++WkJWGlqQlyPQCZYe3+k+ywDw/M0zlYbInz4nU39hUv1c826g8Y1U6VmElV0YEDWk7g1q2DDbAeVL7asULz5aqKaBE9UG6583zVKt3qH9WVLyj9d+wOO6B3CyTFD+JKKXcQIBuvxQQmOgjq3YlS51a8qAAE6Lj5MbbSqTLSSRDGQe5tBfqlJPpzfqYc7tdKP5v/+jXE7R7Wa+g+pVfLKDFRTYlBh2WvlZRA8rRTgatpwsbbouUG18U+W87kZNRueZ4zEwGC5RGsMi/U9QI~-1~-1~-1~AAQAAAAF%2f%2f%2f%2f%2f3GM1R8whyEdw6%2fVueMtlP%2fTb%2fjx8GdXhuRj3TTXu5z6vJiKT9RNJRR%2f7ktP+p9PQEOx8jTi34+JPvNJARzQRnKRdCwP80Gs7Mjw~-1",
+    "domain": ".nseindia.com",
+    "path": "/",
+    "expires": 1802206385.477587,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  }
+]

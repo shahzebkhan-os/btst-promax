@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/a49b02fb3f204e668e1fc9598e0aa533/artifacts
+end_time: 1770719021320
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a49b02fb3f204e668e1fc9598e0aa533
+run_name: big-carp-915
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770719006408
+status: 4
+tags: []
+user_id: aayan

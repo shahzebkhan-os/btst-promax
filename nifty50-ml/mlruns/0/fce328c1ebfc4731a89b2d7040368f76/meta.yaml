@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/fce328c1ebfc4731a89b2d7040368f76/artifacts
+end_time: 1770674912602
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: fce328c1ebfc4731a89b2d7040368f76
+run_name: receptive-hog-968
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770674798972
+status: 3
+tags: []
+user_id: aayan

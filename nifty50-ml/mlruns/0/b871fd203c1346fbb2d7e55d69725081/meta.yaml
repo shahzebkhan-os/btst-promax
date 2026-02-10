@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/b871fd203c1346fbb2d7e55d69725081/artifacts
+end_time: 1770676991056
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b871fd203c1346fbb2d7e55d69725081
+run_name: placid-shrike-231
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770676973907
+status: 4
+tags: []
+user_id: aayan

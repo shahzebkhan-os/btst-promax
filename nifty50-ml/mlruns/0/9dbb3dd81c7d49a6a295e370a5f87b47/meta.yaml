@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/9dbb3dd81c7d49a6a295e370a5f87b47/artifacts
+end_time: 1770676998939
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9dbb3dd81c7d49a6a295e370a5f87b47
+run_name: traveling-seal-685
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770676983476
+status: 4
+tags: []
+user_id: aayan

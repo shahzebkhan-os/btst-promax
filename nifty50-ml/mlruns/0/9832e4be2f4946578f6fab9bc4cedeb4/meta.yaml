@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/9832e4be2f4946578f6fab9bc4cedeb4/artifacts
+end_time: 1770673172134
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9832e4be2f4946578f6fab9bc4cedeb4
+run_name: gaudy-deer-220
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770673153391
+status: 4
+tags: []
+user_id: aayan

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/aad8e767be414b9dbafd17f8d81c482e/artifacts
+end_time: 1770678491472
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: aad8e767be414b9dbafd17f8d81c482e
+run_name: kindly-snipe-651
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770678271108
+status: 4
+tags: []
+user_id: aayan

@@ -1,0 +1,21 @@
+{
+  "atp_players_analyzed": 65989,
+  "wta_players_analyzed": 70036,
+  "atp_matches_processed": 2986,
+  "wta_matches_processed": 2810,
+  "prediction_model": "Multi-factor historical analysis",
+  "enhanced_factors": [
+    "elo_rating",
+    "recent_form",
+    "surface_performance",
+    "head_to_head",
+    "opponent_strength",
+    "injury_status",
+    "weather_conditions",
+    "momentum_factors"
+  ],
+  "data_coverage_years": [
+    "2023 and historical"
+  ],
+  "accuracy_potential": "65-75% with proper validation"
+}

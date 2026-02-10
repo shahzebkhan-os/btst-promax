@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/2c940a0eeb894a6985c8b5e755e86beb/artifacts
+end_time: 1770673052615
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2c940a0eeb894a6985c8b5e755e86beb
+run_name: hilarious-calf-76
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770673040408
+status: 4
+tags: []
+user_id: aayan

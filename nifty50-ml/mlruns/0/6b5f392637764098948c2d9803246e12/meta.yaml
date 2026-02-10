@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/6b5f392637764098948c2d9803246e12/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 6b5f392637764098948c2d9803246e12
+run_name: big-turtle-473
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770676118568
+status: 1
+tags: []
+user_id: aayan

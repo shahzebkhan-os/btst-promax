@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/701e803da87f40e482c4c8473d10b7b4/artifacts
+end_time: 1770678822919
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 701e803da87f40e482c4c8473d10b7b4
+run_name: adaptable-turtle-585
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770678546795
+status: 4
+tags: []
+user_id: aayan

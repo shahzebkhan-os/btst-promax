@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s ease;
+        }
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .up { color: green; font-weight: bold; }
+        .down { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Stock Analysis Dashboard</h1>
+            <p>Real-time stock predictions with historical backtesting</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-stocks">0</div>
+                <div>Total Stocks Analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-confidence">0%</div>
+                <div>Average Confidence</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="up-signals">0</div>
+                <div>UP Signals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="down-signals">0</div>
+                <div>DOWN Signals</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Detailed Analysis Progress</h2>
+            <div id="progress-info"></div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progress-text">No active tasks</div>
+            </div>
+            <div id="detailed-progress">
+                <h3>Detailed Task Information:</h3>
+                <ul id="progress-details-list">
+                    <li>No tasks in progress</li>
+                </ul>
+            </div>
+            <div id="real-time-processing">
+                <h3>Real-Time Processing:</h3>
+                <div id="real-time-status">Monitoring stocks in real-time...</div>
+                <div id="current-analysis">Currently analyzing: <span id="analyzing-stock">None</span></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>⚙️ Analyze Stock</h2>
+            <div class="controls">
+                <input type="text" id="symbol-input" placeholder="Enter stock symbol (e.g., RELIANCE.NS)" />
+                <select id="nifty50-select" onchange="selectNiftyStock()">
+                    <option value="">Select Nifty 50 Stock</option>
+                    <option value="RELIANCE.NS">RELIANCE.NS</option>
+                    <option value="TCS.NS">TCS.NS</option>
+                    <option value="HDFCBANK.NS">HDFCBANK.NS</option>
+                    <option value="INFY.NS">INFY.NS</option>
+                    <option value="ICICIBANK.NS">ICICIBANK.NS</option>
+                    <option value="HINDUNILVR.NS">HINDUNILVR.NS</option>
+                    <option value="ITC.NS">ITC.NS</option>
+                    <option value="SBIN.NS">SBIN.NS</option>
+                    <option value="BHARTIARTL.NS">BHARTIARTL.NS</option>
+                    <option value="BAJFINANCE.NS">BAJFINANCE.NS</option>
+                    <option value="LT.NS">LT.NS</option>
+                    <option value="ASIANPAINT.NS">ASIANPAINT.NS</option>
+                    <option value="MARUTI.NS">MARUTI.NS</option>
+                    <option value="AXISBANK.NS">AXISBANK.NS</option>
+                    <option value="SUNPHARMA.NS">SUNPHARMA.NS</option>
+                    <option value="TITAN.NS">TITAN.NS</option>
+                    <option value="ULTRACEMCO.NS">ULTRACEMCO.NS</option>
+                    <option value="WIPRO.NS">WIPRO.NS</option>
+                    <option value="NESTLEIND.NS">NESTLEIND.NS</option>
+                    <option value="M&M.NS">M&M.NS</option>
+                    <option value="IOC.NS">IOC.NS</option>
+                    <option value="ONGC.NS">ONGC.NS</option>
+                    <option value="POWERGRID.NS">POWERGRID.NS</option>
+                    <option value="COALINDIA.NS">COALINDIA.NS</option>
+                    <option value="GRASIM.NS">GRASIM.NS</option>
+                    <option value="BRITANNIA.NS">BRITANNIA.NS</option>
+                    <option value="HINDZINC.NS">HINDZINC.NS</option>
+                    <option value="ZEEL.NS">ZEEL.NS</option>
+                    <option value="SHREECEM.NS">SHREECEM.NS</option>
+                    <option value="BPCL.NS">BPCL.NS</option>
+                    <option value="JSWSTEEL.NS">JSWSTEEL.NS</option>
+                    <option value="NTPC.NS">NTPC.NS</option>
+                    <option value="HEROMOTOCO.NS">HEROMOTOCO.NS</option>
+                    <option value="TECHM.NS">TECHM.NS</option>
+                    <option value="DRREDDY.NS">DRREDDY.NS</option>
+                    <option value="HDFC.NS">HDFC.NS</option>
+                    <option value="UPL.NS">UPL.NS</option>
+                    <option value="INDUSINDBK.NS">INDUSINDBK.NS</option>
+                    <option value="ADANIPORTS.NS">ADANIPORTS.NS</option>
+                    <option value="CIPLA.NS">CIPLA.NS</option>
+                    <option value="SBILIFE.NS">SBILIFE.NS</option>
+                    <option value="VEDL.NS">VEDL.NS</option>
+                    <option value="APOLLOHOSP.NS">APOLLOHOSP.NS</option>
+                    <option value="DIVISLAB.NS">DIVISLAB.NS</option>
+                    <option value="EICHERMOT.NS">EICHERMOT.NS</option>
+                    <option value="HCLTECH.NS">HCLTECH.NS</option>
+                    <option value="TATACONSUM.NS">TATACONSUM.NS</option>
+                    <option value="BAJAJFINSV.NS">BAJAJFINSV.NS</option>
+                    <option value="KOTAKBANK.NS">KOTAKBANK.NS</option>
+                    <option value="ADANIENT.NS">ADANIENT.NS</option>
+                    <option value="ALL_NIFTY50">📈 ANALYZE ALL NIFTY 50</option>
+                </select>
+                <button onclick="analyzeStock()">Analyze</button>
+                <button onclick="analyzeAllNifty50()">Analyze All</button>
+                <button onclick="backtestStock()">Backtest</button>
+                <button onclick="processNewStock()">Add & Process New Stock</button>
+            </div>
+            <div id="analyze-result"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Processed Stocks</h2>
+            <div id="processed-stocks-list">
+                Loading processed stocks...
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>💰 Live Stock Prices</h2>
+            <div class="controls">
+                <input type="text" id="live-symbol-input" placeholder="Enter symbols (comma-separated)" />
+                <button onclick="getLivePrices()">Get Live Prices</button>
+            </div>
+            <div id="live-prices-display"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Recent Analysis Results</h2>
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Direction</th>
+                        <th>Confidence</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- Results will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>🔄 Backtesting Results</h2>
+            <div id="backtest-results">
+                Run backtests to see historical performance metrics
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update stats periodically
+        function updateStats() {
+            fetch('/api/results')
+                .then(response => response.json())
+                .then(data => {
+                    const results = data.results;
+                    
+                    // Update stats - count unique stocks instead of all results
+                    const uniqueSymbols = [...new Set(results.map(r => r.symbol))];
+                    document.getElementById('total-stocks').textContent = uniqueSymbols.length;
+                    
+                    // Calculate average confidence
+                    if (results.length > 0) {
+                        const avgConfidence = (results.reduce((sum, r) => sum + r.confidence, 0) / results.length * 100).toFixed(1);
+                        document.getElementById('avg-confidence').textContent = avgConfidence + '%';
+                        
+                        // Count up/down signals
+                        const upSignals = results.filter(r => r.direction === 'UP').length;
+                        const downSignals = results.filter(r => r.direction === 'DOWN').length;
+                        document.getElementById('up-signals').textContent = upSignals;
+                        document.getElementById('down-signals').textContent = downSignals;
+                    }
+                    
+                    // Update results table
+                    const tbody = document.getElementById('results-body');
+                    tbody.innerHTML = '';
+                    results.slice(0, 10).forEach(result => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${result.symbol}</td>
+                            <td class="${result.direction.toLowerCase()}">${result.direction}</td>
+                            <td>${(result.confidence * 100).toFixed(1)}%</td>
+                            <td>$${parseFloat(result.current_price).toFixed(2)}</td>
+                            <td>${result.price_change !== undefined ? result.price_change.toFixed(2) + '%' : 'N/A'}</td>
+                            <td>${new Date(result.timestamp).toLocaleTimeString()}</td>
+                        `;
+                    });
+                });
+        }
+        
+        // Update progress
+        function updateProgress() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.progress && data.progress.length > 0) {
+                        const progress = data.progress[0]; // Most recent
+                        if (progress) {
+                            const percentage = progress.completed_items / progress.total_items * 100;
+                            document.getElementById('progress-fill').style.width = percentage + '%';
+                            document.getElementById('progress-text').textContent = 
+                                `${progress.task}: ${progress.completed_items}/${progress.total_items} (${percentage.toFixed(1)}%)`;
+                            
+                            // Update progress info
+                            document.getElementById('progress-info').innerHTML = 
+                                `<strong>Status:</strong> ${progress.status} | 
+                                 <strong>Task:</strong> ${progress.task}`;
+                            
+                            // Update detailed progress list
+                            const detailsList = document.getElementById('progress-details-list');
+                            let detailsHtml = '';
+                            
+                            data.progress.forEach(p => {
+                                const percent = p.completed_items / p.total_items * 100;
+                                detailsHtml += `
+                                    <li>
+                                        <strong>${p.task}</strong>: 
+                                        ${p.completed_items}/${p.total_items} completed (${percent.toFixed(1)}%) | 
+                                        Status: ${p.status} | 
+                                        Started: ${p.start_time || 'N/A'}
+                                    </li>
+                                `;
+                            });
+                            
+                            if (detailsHtml === '') {
+                                detailsHtml = '<li>No tasks in progress</li>';
+                            }
+                            
+                            detailsList.innerHTML = detailsHtml;
+                            
+                            // Update real-time processing display
+                            const realTimeStatus = document.getElementById('real-time-status');
+                            const analyzingStock = document.getElementById('analyzing-stock');
+                            
+                            // Find if there's real-time monitoring happening
+                            const monitoringTasks = data.progress.filter(p => p.task.includes('monitoring'));
+                            if (monitoringTasks.length > 0) {
+                                realTimeStatus.textContent = 'Active - Monitoring stocks in real-time';
+                                
+                                // Extract the stock being monitored from the task name
+                                const monitoringTask = monitoringTasks.find(t => t.task.startsWith('monitoring_'));
+                                if (monitoringTask) {
+                                    const stock = monitoringTask.task.replace('monitoring_', '');
+                                    analyzingStock.textContent = stock;
+                                }
+                            } else {
+                                realTimeStatus.textContent = 'Monitoring stocks in real-time...';
+                                analyzingStock.textContent = 'None currently';
+                            }
+                        } else {
+                            document.getElementById('progress-fill').style.width = '0%';
+                            document.getElementById('progress-text').textContent = 'No active tasks';
+                            document.getElementById('progress-details-list').innerHTML = '<li>No tasks in progress</li>';
+                            document.getElementById('analyzing-stock').textContent = 'None';
+                        }
+                    } else {
+                        document.getElementById('progress-fill').style.width = '0%';
+                        document.getElementById('progress-text').textContent = 'No active tasks';
+                        document.getElementById('progress-details-list').innerHTML = '<li>No tasks in progress</li>';
+                        document.getElementById('analyzing-stock').textContent = 'None';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating progress:', error);
+                    document.getElementById('progress-text').textContent = 'Error loading progress';
+                });
+        }
+        
+        // Analyze a stock
+        function analyzeStock() {
+            const symbol = document.getElementById('symbol-input').value.trim();
+            if (!symbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+            
+            document.getElementById('analyze-result').textContent = 'Analyzing...';
+            
+            fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbol: symbol })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.result;
+                if (result) {
+                    document.getElementById('analyze-result').innerHTML = 
+                        `<div style="color: ${result.direction === 'UP' ? 'green' : 'red'}; font-weight: bold;">
+                            ${result.symbol}: ${result.direction} (${(result.confidence * 100).toFixed(1)}%) - $${result.current_price.toFixed(2)}
+                        </div>`;
+                } else {
+                    document.getElementById('analyze-result').textContent = 'Analysis failed';
+                }
+            });
+        }
+        
+        // Backtest a stock
+        function backtestStock() {
+            const symbol = document.getElementById('symbol-input').value.trim();
+            if (!symbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+            
+            document.getElementById('backtest-results').textContent = 'Running backtest...';
+            
+            fetch('/api/backtest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbol: symbol })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.result;
+                if (result) {
+                    document.getElementById('backtest-results').innerHTML = `
+                        <h3>Backtest Results for ${result.symbol}</h3>
+                        <p><strong>Win Rate:</strong> ${(result.win_rate * 100).toFixed(2)}%</p>
+                        <p><strong>Total Return:</strong> ${result.total_return.toFixed(4)}</p>
+                        <p><strong>Sharpe Ratio:</strong> ${result.sharpe_ratio.toFixed(4)}</p>
+                        <p><strong>Max Drawdown:</strong> ${result.max_drawdown.toFixed(4)}</p>
+                    `;
+                } else {
+                    document.getElementById('backtest-results').textContent = 'Backtest failed';
+                }
+            });
+        }
+        
+        // Process a new stock
+        function processNewStock() {
+            const symbol = document.getElementById('symbol-input').value.trim();
+            if (!symbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+            
+            document.getElementById('analyze-result').textContent = 'Processing new stock... This may take a few minutes.';
+            
+            fetch('/api/process_new_stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbol: symbol })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const result = data.result;
+                    document.getElementById('analyze-result').innerHTML = 
+                        `<div style="color: ${result.direction === 'UP' ? 'green' : 'red'}; font-weight: bold;">
+                            ${result.symbol}: ${result.direction} (${(result.confidence * 100).toFixed(1)}%) - $${result.current_price.toFixed(2)}
+                        </div>
+                        <p>Stock processed and added to system!</p>`;
+                } else {
+                    document.getElementById('analyze-result').textContent = 'Failed to process stock: ' + data.error;
+                }
+            })
+            .catch(error => {
+                document.getElementById('analyze-result').textContent = 'Error processing stock: ' + error.message;
+            });
+        }
+        
+        // Get all processed stocks
+        function updateProcessedStocks() {
+            fetch('/api/stocks')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('processed-stocks-list');
+                    if (data.symbols.length > 0) {
+                        let html = '<ul>';
+                        data.symbols.forEach(symbol => {
+                            html += `<li>${symbol}</li>`;
+                        });
+                        html += '</ul>';
+                        container.innerHTML = html;
+                    } else {
+                        container.textContent = 'No stocks processed yet';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('processed-stocks-list').textContent = 'Error loading processed stocks: ' + error.message;
+                });
+        }
+        
+        // Select Nifty 50 stock from dropdown
+        function selectNiftyStock() {
+            const selectElement = document.getElementById('nifty50-select');
+            const symbol = selectElement.value;
+            if (symbol === 'ALL_NIFTY50') {
+                // Handle special case for all Nifty 50
+                analyzeAllNifty50();
+            } else if (symbol) {
+                document.getElementById('symbol-input').value = symbol;
+            }
+        }
+        
+        // Analyze all Nifty 50 stocks
+        async function analyzeAllNifty50() {
+            const nifty50Stocks = [
+                'RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'ICICIBANK.NS',
+                'HINDUNILVR.NS', 'ITC.NS', 'SBIN.NS', 'BHARTIARTL.NS', 'BAJFINANCE.NS',
+                'LT.NS', 'ASIANPAINT.NS', 'MARUTI.NS', 'AXISBANK.NS', 'SUNPHARMA.NS',
+                'TITAN.NS', 'ULTRACEMCO.NS', 'WIPRO.NS', 'NESTLEIND.NS', 'M&M.NS',
+                'IOC.NS', 'ONGC.NS', 'POWERGRID.NS', 'COALINDIA.NS', 'GRASIM.NS',
+                'BRITANNIA.NS', 'HINDZINC.NS', 'ZEEL.NS', 'SHREECEM.NS', 'BPCL.NS',
+                'JSWSTEEL.NS', 'NTPC.NS', 'HEROMOTOCO.NS', 'TECHM.NS', 'DRREDDY.NS',
+                'HDFC.NS', 'UPL.NS', 'INDUSINDBK.NS', 'ADANIPORTS.NS', 'CIPLA.NS',
+                'SBILIFE.NS', 'VEDL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS', 'EICHERMOT.NS',
+                'HCLTECH.NS', 'TATACONSUM.NS', 'BAJAJFINSV.NS', 'KOTAKBANK.NS', 'ADANIENT.NS'
+            ];
+            
+            document.getElementById('analyze-result').innerHTML = 
+                `<div style="color: blue; font-weight: bold;">Processing all ${nifty50Stocks.length} Nifty 50 stocks...</div>`;
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (let i = 0; i < nifty50Stocks.length; i++) {
+                const symbol = nifty50Stocks[i];
+                document.getElementById('analyze-result').innerHTML += 
+                    `<div>Processing [${i+1}/${nifty50Stocks.length}] ${symbol}...</div>`;
+                
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ symbol: symbol })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.result) {
+                        const result = data.result;
+                        const color = result.direction === 'UP' ? 'green' : 'red';
+                        document.getElementById('analyze-result').innerHTML += 
+                            `<div style="color: ${color}; margin-left: 20px;">✓ ${symbol}: ${result.direction} (${(result.confidence * 100).toFixed(1)}%) - $${result.current_price.toFixed(2)}</div>`;
+                        successCount++;
+                    } else {
+                        document.getElementById('analyze-result').innerHTML += 
+                            `<div style="color: orange; margin-left: 20px;">⚠ Failed to analyze ${symbol}</div>`;
+                        errorCount++;
+                    }
+                } catch (error) {
+                    document.getElementById('analyze-result').innerHTML += 
+                        `<div style="color: red; margin-left: 20px;">✗ Error analyzing ${symbol}: ${error.message}</div>`;
+                    errorCount++;
+                }
+                
+                // Small delay to prevent overwhelming the server
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            document.getElementById('analyze-result').innerHTML += 
+                `<div style="font-weight: bold; margin-top: 10px;">Completed: ${successCount} successful, ${errorCount} errors</div>`;
+        }
+        
+        // Get live prices
+        function getLivePrices() {
+            const symbolsInput = document.getElementById('live-symbol-input').value.trim();
+            if (!symbolsInput) {
+                alert('Please enter stock symbols (comma-separated)');
+                return;
+            }
+            
+            const symbols = symbolsInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s);
+            
+            fetch('/api/live_prices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbols: symbols })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('live-prices-display');
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">';
+                
+                for (const [symbol, info] of Object.entries(data.live_data)) {
+                    const color = typeof info.change_pct === 'number' && info.change_pct >= 0 ? 'green' : 'red';
+                    html += `
+                        <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                            <div><strong>${symbol}</strong></div>
+                            <div>Price: $${typeof info.price === 'number' ? info.price.toFixed(2) : info.price}</div>
+                            <div style="color: ${color}">Change: ${typeof info.change_pct === 'number' ? info.change_pct.toFixed(2) : info.change_pct}%</div>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('live-prices-display').textContent = 'Error getting live prices: ' + error.message;
+            });
+        }
+        
+        // Auto-refresh
+        setInterval(updateStats, 5000);
+        setInterval(updateProgress, 3000);
+        setInterval(updateProcessedStocks, 10000); // Update processed stocks every 10 seconds
+        
+        // Initial load
+        updateStats();
+        updateProgress();
+        updateProcessedStocks();
+    </script>
+</body>
+</html>

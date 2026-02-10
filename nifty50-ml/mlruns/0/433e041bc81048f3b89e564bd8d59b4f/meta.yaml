@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/aayan/.openclaw/workspace/nifty50-ml/mlruns/0/433e041bc81048f3b89e564bd8d59b4f/artifacts
+end_time: 1770672253824
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 433e041bc81048f3b89e564bd8d59b4f
+run_name: unleashed-bat-295
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770672240180
+status: 4
+tags: []
+user_id: aayan
