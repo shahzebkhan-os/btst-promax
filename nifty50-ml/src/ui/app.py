@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import subprocess
+import os
+import datetime as dt
 from src.pipeline.eta import ETAState
 
 st.set_page_config(page_title="NIFTY50 ML", layout="wide")
@@ -40,8 +42,6 @@ show_all = st.checkbox("Show all symbols", value=True)
 st.subheader("Predictions")
 
 st.info("RISK NOTICE: Educational only. Not financial advice.")
-import os
-import datetime as dt
 
 # QoL controls
 query = st.text_input("Search symbol", "").upper().strip()
@@ -69,6 +69,22 @@ else:
         "last_update": [now_str for _ in range(len(display))]
     })
 
+# Override prices from NSE bulk option-chain CSV if available
+bulk_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "nse_fno_bulk_option_chain.csv"))
+if os.path.exists(bulk_path):
+    try:
+        bulk = pd.read_csv(bulk_path)
+        if not bulk.empty and "symbol" in bulk.columns and "underlying" in bulk.columns:
+            if "timestamp" in bulk.columns:
+                bulk["timestamp"] = pd.to_datetime(bulk["timestamp"], errors="coerce")
+                bulk = bulk.sort_values("timestamp")
+            latest_underlying = bulk.groupby("symbol", as_index=False).tail(1)[["symbol", "underlying"]]
+            price_map = dict(zip(latest_underlying["symbol"], latest_underlying["underlying"]))
+            df["price_nse"] = df["symbol"].map(price_map)
+            df["price"] = df["price_nse"].fillna(df.get("price"))
+    except Exception:
+        pass
+
 # Filters
 if query:
     df = df[df["symbol"].str.contains(query, na=False)]
@@ -83,18 +99,47 @@ if "confidence" in df.columns:
 if not show_all:
     df = df.head(row_limit)
 
+# Rewrite table (clean columns + NSE price override where available)
+col_order = [
+    "symbol",
+    "price",
+    "suggested_option",
+    "option_price",
+    "option_value",
+    "confidence",
+    "regime",
+    "last_update",
+]
+existing = [c for c in col_order if c in df.columns]
+view = df[existing].copy()
+if "confidence" in view.columns:
+    view["confidence"] = (view["confidence"] * 100).round(2)
+
 # Color CALL/PUT
-if "suggested_option" in df.columns:
+if "suggested_option" in view.columns:
     def color_call_put(val):
         if val == "CALL":
             return "color: #00c853; font-weight: 700;"
         if val == "PUT":
             return "color: #d50000; font-weight: 700;"
         return ""
-    styled = df.style.map(color_call_put, subset=["suggested_option"])
-    st.dataframe(styled, use_container_width=True)
+    styled = view.style.map(color_call_put, subset=["suggested_option"])
+    st.dataframe(
+        styled,
+        use_container_width=True,
+        column_config={
+            "symbol": st.column_config.TextColumn("Symbol"),
+            "price": st.column_config.NumberColumn("Price (NSE if available)", format="%.2f"),
+            "suggested_option": st.column_config.TextColumn("Option"),
+            "option_price": st.column_config.NumberColumn("Option Price", format="%.2f"),
+            "option_value": st.column_config.NumberColumn("Option Value", format="%.2f"),
+            "confidence": st.column_config.NumberColumn("Confidence %", format="%.2f"),
+            "regime": st.column_config.TextColumn("Regime"),
+            "last_update": st.column_config.TextColumn("Updated"),
+        },
+    )
 else:
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(view, use_container_width=True)
 
 file_ts = ""
 if os.path.exists("data/features/latest.csv"):
