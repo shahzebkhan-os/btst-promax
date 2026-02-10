@@ -1,4 +1,5 @@
 import time
+import os
 import pandas as pd
 import numpy as np
 from src.ingest.connectors import fetch_yahoo_ohlc, fetch_historical_fo
@@ -20,7 +21,8 @@ from src.utils.leakage import detect_leakage
 
 
 def process_symbol(symbol: str):
-    df = fetch_yahoo_ohlc(symbol, period="10y", interval="1d")
+    # use intraday for fresher prices
+    df = fetch_yahoo_ohlc(symbol, period="5d", interval="15m")
     df = add_indicators(df.rename(columns=str.title))
 
     # label option P&L (proxy on close for T+1/T+3)
@@ -99,6 +101,25 @@ def process_symbol(symbol: str):
             option_value = float(leg.get("openInterest") or leg.get("oi") or 0)
     except Exception:
         pass
+
+    # fallback: use browser-scraped bulk CSV if present
+    if option_price <= 0 or option_value <= 0:
+        try:
+            import pandas as pd
+            bulk_path = "/Users/aayan/.openclaw/workspace/nse_fno_bulk_option_chain.csv"
+            if os.path.exists(bulk_path):
+                df_bulk = pd.read_csv(bulk_path)
+                df_sym = df_bulk[df_bulk["symbol"] == symbol]
+                if not df_sym.empty:
+                    # choose latest expiry row with max OI around ATM
+                    df_sym["ce_openInterest"] = pd.to_numeric(df_sym["ce_openInterest"], errors="coerce")
+                    df_sym["pe_openInterest"] = pd.to_numeric(df_sym["pe_openInterest"], errors="coerce")
+                    df_sym["score"] = df_sym["ce_openInterest"].fillna(0) + df_sym["pe_openInterest"].fillna(0)
+                    row = df_sym.sort_values("score", ascending=False).iloc[0]
+                    option_price = float(row.get("ce_lastPrice") or row.get("pe_lastPrice") or 0)
+                    option_value = float(row.get("ce_openInterest") or row.get("pe_openInterest") or 0)
+        except Exception:
+            pass
 
     option_price = option_price if option_price > 0 else 0.0
     option_value = option_value if option_value > 0 else 0.0
