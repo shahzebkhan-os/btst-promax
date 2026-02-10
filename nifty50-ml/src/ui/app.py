@@ -112,6 +112,7 @@ col_order = [
     "option_value",
     "confidence",
     "model_accuracy",
+    "model_coverage",
     "regime",
     "last_update",
 ]
@@ -140,6 +141,7 @@ if "suggested_option" in view.columns:
             "option_value": st.column_config.NumberColumn("Option Value", format="%.2f"),
             "confidence": st.column_config.NumberColumn("Confidence %", format="%.2f"),
             "model_accuracy": st.column_config.NumberColumn("Model Acc %", format="%.2f"),
+            "model_coverage": st.column_config.NumberColumn("Coverage %", format="%.2f"),
             "regime": st.column_config.TextColumn("Regime"),
             "last_update": st.column_config.TextColumn("Updated"),
         },

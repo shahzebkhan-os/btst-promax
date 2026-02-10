@@ -119,10 +119,23 @@ def process_symbol(symbol: str):
             # probability for latest row
             prob = float(rf.predict_proba(features.tail(1).fillna(0))[0])
             # accuracy on test
-            y_pred = (rf.predict_proba(X_test) >= 0.5).astype(int)
-            model_acc = float(accuracy_score(y_test, y_pred))
+            proba_test = rf.predict_proba(X_test)
+            y_pred = (proba_test >= 0.5).astype(int)
+            # high-confidence accuracy (more realistic for trading signals)
+            mask = (proba_test >= 0.6) | (proba_test <= 0.4)
+            if mask.sum() > 0:
+                model_acc = float(accuracy_score(y_test[mask], y_pred[mask]))
+                model_cov = float(mask.mean())
+            else:
+                model_acc = float(accuracy_score(y_test, y_pred))
+                model_cov = 1.0
         else:
             model_acc = 0.0
+            model_cov = 0.0
+    except Exception:
+        prob = raw_prob
+        model_acc = 0.0
+        model_cov = 0.0
     except Exception:
         prob = raw_prob
         model_acc = 0.0
@@ -204,6 +217,7 @@ def process_symbol(symbol: str):
         "option_value": float(top.get("payoff", 0)),
         "regime": regime,
         "model_accuracy": model_acc,
+        "model_coverage": model_cov,
         "dropped_features": len(dropped) + len(l1_dropped) + len(shap_dropped),
         "leakage_flags": ";".join(leak_flags) if leak_flags else ""
     }
