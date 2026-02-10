@@ -105,7 +105,6 @@ def process_symbol(symbol: str):
     # fallback: use browser-scraped bulk CSV if present
     if option_price <= 0 or option_value <= 0:
         try:
-            import pandas as pd
             bulk_path = "/Users/aayan/.openclaw/workspace/nse_fno_bulk_option_chain.csv"
             if os.path.exists(bulk_path):
                 df_bulk = pd.read_csv(bulk_path)
