@@ -38,6 +38,34 @@ def fetch_yahoo_ohlc(symbol: str, period="10y", interval="1d"):
     return data.reset_index()
 
 
+def fetch_kite_ltp(symbols):
+    """Fetch live LTP from Kite for a list of NSE symbols. Returns dict symbol->ltp."""
+    api_key = os.getenv("KITE_API_KEY")
+    access_token = os.getenv("KITE_ACCESS_TOKEN")
+    if not api_key or not access_token or not symbols:
+        return {}
+    url = "https://api.kite.trade/quote/ltp"
+    headers = {"Authorization": f"token {api_key}:{access_token}"}
+    out = {}
+    # Kite supports multiple instruments via repeated i= param
+    for i in range(0, len(symbols), 100):
+        chunk = symbols[i:i+100]
+        params = [("i", f"NSE:{s}") for s in chunk]
+        try:
+            r = requests.get(url, headers=headers, params=params, timeout=10)
+            if r.status_code != 200:
+                continue
+            data = (r.json() or {}).get("data", {})
+            for k, v in data.items():
+                sym = k.split(":", 1)[-1]
+                ltp = v.get("last_price") if isinstance(v, dict) else None
+                if ltp is not None:
+                    out[sym] = ltp
+        except Exception:
+            continue
+    return out
+
+
 def fetch_nse_option_chain(symbol: str, expiry: str = ""):
     s = _session()
     url = NSE_BASE + "/api/option-chain-v3"

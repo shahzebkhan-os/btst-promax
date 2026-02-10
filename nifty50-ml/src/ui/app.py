@@ -95,6 +95,10 @@ if option_filter != "ALL" and "suggested_option" in df.columns:
 if "confidence" in df.columns:
     df = df.sort_values("confidence", ascending=False)
 
+# Deduplicate to one row per symbol (keeps highest confidence)
+if "symbol" in df.columns:
+    df = df.drop_duplicates(subset=["symbol"], keep="first")
+
 # Limit rows
 if not show_all:
     df = df.head(row_limit)

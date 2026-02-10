@@ -2,7 +2,8 @@ import time
 import os
 import pandas as pd
 import numpy as np
-from src.ingest.connectors import fetch_yahoo_ohlc, fetch_historical_fo
+from pathlib import Path
+from src.ingest.connectors import fetch_yahoo_ohlc, fetch_historical_fo, fetch_kite_ltp
 from src.features.indicators import add_indicators
 from src.models.lstm import LSTMModel
 from src.options.recommender import recommend
@@ -20,9 +21,42 @@ from src.options.labeling import label_option_pnl
 from src.utils.leakage import detect_leakage
 
 
+KITE_LTP_CACHE = {}
+
+
+def _load_env_file(path: str):
+    try:
+        if not path or not os.path.exists(path):
+            return
+        with open(path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                if k and k not in os.environ:
+                    os.environ[k] = v
+    except Exception:
+        pass
+
+
 def process_symbol(symbol: str):
     # use intraday for fresher prices
     df = fetch_yahoo_ohlc(symbol, period="5d", interval="15m")
+    if df is None or len(df) == 0:
+        return {
+            "symbol": symbol,
+            "price": 0.0,
+            "confidence": 0.5,
+            "suggested_option": "CALL",
+            "option_price": 0.0,
+            "option_value": 0.0,
+            "regime": "low",
+            "dropped_features": 0,
+            "leakage_flags": ""
+        }
     df = add_indicators(df.rename(columns=str.title))
 
     # label option P&L (proxy on close for T+1/T+3)
@@ -48,7 +82,10 @@ def process_symbol(symbol: str):
     if hasattr(close_series, "values") and getattr(close_series, "ndim", 1) > 1:
         close_series = close_series.iloc[:, 0]
     vol_series = close_series.pct_change().rolling(60).std().fillna(0)
-    regime = detect_regime(float(vol_series.iloc[-1] or 0))
+    if len(vol_series) == 0:
+        regime = "low"
+    else:
+        regime = detect_regime(float(vol_series.iloc[-1] or 0))
 
     # regime-specific model proxy (placeholder for real models)
     if regime == "low":
@@ -103,8 +140,15 @@ def process_symbol(symbol: str):
         pass
 
     price_override = None
+    # primary: Kite live LTP if available
+    try:
+        if symbol in KITE_LTP_CACHE and KITE_LTP_CACHE[symbol] is not None:
+            price_override = float(KITE_LTP_CACHE[symbol])
+    except Exception:
+        pass
+
     # fallback: use browser-scraped bulk CSV if present
-    if option_price <= 0 or option_value <= 0:
+    if option_price <= 0 or option_value <= 0 or not price_override:
         try:
             bulk_path = "/Users/aayan/.openclaw/workspace/nse_fno_bulk_option_chain.csv"
             if os.path.exists(bulk_path):
@@ -119,10 +163,11 @@ def process_symbol(symbol: str):
                     row = df_sym.sort_values("score", ascending=False).iloc[0]
                     option_price = float(row.get("ce_lastPrice") or row.get("pe_lastPrice") or 0)
                     option_value = float(row.get("ce_openInterest") or row.get("pe_openInterest") or 0)
-                    try:
-                        price_override = float(row.get("underlying") or 0)
-                    except Exception:
-                        price_override = None
+                    if not price_override:
+                        try:
+                            price_override = float(row.get("underlying") or 0)
+                        except Exception:
+                            price_override = None
         except Exception:
             pass
 
@@ -162,11 +207,24 @@ def main():
         ]
     pool = WorkerPool(workers=2)
 
+    # load .env (if present) for Kite creds
+    env_path = os.path.join(os.getcwd(), ".env")
+    _load_env_file(env_path)
+
+    # warm Kite LTP cache (best-effort)
+    global KITE_LTP_CACHE
+    try:
+        KITE_LTP_CACHE = fetch_kite_ltp(symbols)
+    except Exception:
+        KITE_LTP_CACHE = {}
+
     with mlflow.start_run():
         results = pool.run(symbols, process_symbol)
         log_params_metrics({"symbols": len(symbols)}, {"processed": len(results)})
 
     df = pd.DataFrame(results)
+    if "symbol" in df.columns:
+        df = df.sort_values("confidence", ascending=False).drop_duplicates(subset=["symbol"], keep="first")
     df.to_csv("data/features/latest.csv", index=False)
     print("Wrote data/features/latest.csv")
 
